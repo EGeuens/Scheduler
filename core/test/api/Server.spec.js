@@ -1,18 +1,13 @@
 "use strict";
 var imports = {
-		Logger      : require("../../api/util/Logger"),
-		Environments: require("../../api/enum/Environments"),
-		Config      : require("../../api/Config"),
-		Server : require("../../api/Server"),
-		express: require("express"),
-		http   : require("http"),
-		io     : require("socket.io")
-	},
-	privates = {
-		appInstance : null,
-		httpInstance: null,
-		ioInstance  : null
-	};
+	Logger      : require("../../api/util/Logger"),
+	Environments: require("../../api/enum/Environments"),
+	Config      : require("../../api/Config"),
+	Server      : require("../../api/Server"),
+	express     : require("express"),
+	http        : require("http"),
+	io          : require("socket.io")
+};
 
 ddescribe("Server", function () {
 	beforeEach(function () {

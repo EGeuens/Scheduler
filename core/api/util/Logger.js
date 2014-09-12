@@ -59,6 +59,12 @@ function Logger() {
  * Log level severity used for debugging
  * @type {number}
  */
+Logger.prototype.LOG_LEVEL_NONE = 0;
+
+/**
+ * Log level severity used for debugging
+ * @type {number}
+ */
 Logger.prototype.LOG_LEVEL_DEBUG = 10;
 
 /**
@@ -94,7 +100,7 @@ Logger.prototype.init = function (msg, severity) {
 Logger.prototype.setLogLevel = function (severity) {
 	if (severity !== Logger.prototype.LOG_LEVEL_INFO && severity !== Logger.prototype.LOG_LEVEL_DEBUG && severity !== Logger.prototype.LOG_LEVEL_ERROR) {
 		Logger.prototype.error(imports.Messages.ERROR_UNKNOWN_SEVERITY_LEVEL, ":", severity);
-		severity = 0;
+		severity = Logger.prototype.LOG_LEVEL_NONE;
 	}
 
 	privates.logLevel = severity;

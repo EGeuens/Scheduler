@@ -24,7 +24,11 @@ var imports = {
 /**
  * @constructor
  */
-var Server = function () {
+var Server = function(){
+	return this;
+};
+
+Server.prototype.init = function () {
 	var me = this,
 		lLogLevel;
 
@@ -33,6 +37,9 @@ var Server = function () {
 	}
 	else if (imports.Config.environment === imports.Environments.PRODUCTION) {
 		lLogLevel = imports.Logger.LOG_LEVEL_ERROR;
+	}
+	else if (imports.Config.environment === imports.Environments.TEST) {
+		lLogLevel = imports.Logger.LOG_LEVEL_NONE;
 	}
 
 	imports.Logger.init("Initializing the Core... Hold on to yo' butts!!", lLogLevel);

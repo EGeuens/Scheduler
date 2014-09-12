@@ -11,7 +11,8 @@
  */
 var Environments = {
 	DEV       : "dev",
-	PRODUCTION: "prd"
+	PRODUCTION: "prd",
+	TEST: "tst"
 };
 
 module.exports = Environments;

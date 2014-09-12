@@ -12,7 +12,7 @@ var imports = {
 		Messages       : require("../enum/Messages")
 	},
 	privates = {
-		logLevel: 0,
+		logLevel: undefined,
 
 		logColors: {
 			error: "red",
@@ -54,14 +54,18 @@ var imports = {
  * @constructor
  */
 function Logger() {
-	return this;
+	var me = this;
+	//set default log level to nothing!
+	me.setLogLevel(me.LOG_LEVEL_NONE);
+
+	return me;
 }
 
 /**
  * Log level severity used for debugging
  * @type {number}
  */
-Logger.prototype.LOG_LEVEL_NONE = 0;
+Logger.prototype.LOG_LEVEL_NONE = 9999;
 
 /**
  * Log level severity used for debugging

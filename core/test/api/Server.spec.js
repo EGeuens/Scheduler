@@ -3,7 +3,10 @@ var imports = {
 		Logger      : require("../../api/util/Logger"),
 		Environments: require("../../api/enum/Environments"),
 		Config      : require("../../api/Config"),
-		Server      : require("../../api/Server")
+		Server : require("../../api/Server"),
+		express: require("express"),
+		http   : require("http"),
+		io     : require("socket.io")
 	},
 	privates = {
 		appInstance : null,
@@ -13,7 +16,13 @@ var imports = {
 
 ddescribe("Server", function () {
 	beforeEach(function () {
+		//setup test environment for the server
 		imports.Config.environment = imports.Environments.TEST;
+		imports.Config.port = imports.Config.testPort;
+	});
+
+	afterEach(function () {
+		imports.Server.close();
 	});
 
 	describe("init", function () {
@@ -31,7 +40,66 @@ ddescribe("Server", function () {
 			expect(imports.Server.prepareServer).toHaveBeenCalled();
 			expect(imports.Server.setupParameters).toHaveBeenCalled();
 			expect(imports.Server.setupListeners).toHaveBeenCalled();
+		});
+	});
 
+	describe("initLogger", function () {
+		beforeEach(function () {
+			spyOn(imports.Logger, "init");
+		});
+
+		it("should initialise the Logger", function () {
+			imports.Server.initLogger();
+
+			expect(imports.Logger.init).toHaveBeenCalled();
+		});
+	});
+
+	describe("prepareServer", function () {
+		beforeEach(function () {
+			//Callthroughs because otherwise setHttp and setIo don't work
+			spyOn(imports.Server, "setApp").andCallThrough();
+			spyOn(imports.Server, "setHttp").andCallThrough();
+			spyOn(imports.Server, "setIo").andCallThrough();
+		});
+
+		it("should prepare the server (setup app, http and io privates)", function () {
+			imports.Server.prepareServer();
+
+			expect(imports.Server.setApp).toHaveBeenCalled();
+			expect(imports.Server.setHttp).toHaveBeenCalled();
+			expect(imports.Server.setIo).toHaveBeenCalled();
+		});
+	});
+
+	describe("setupParameters", function () {
+		beforeEach(function () {
+			imports.Server.setApp(imports.express());
+		});
+
+		it("should prepare the server (setup app, http and io privates)", function () {
+			imports.Server.setupParameters();
+
+			expect(imports.Server.getApp().get("port")).toBe(imports.Config.port);
+			expect(imports.Server.getApp().get("port")).toBe(imports.Config.testPort); //nope, not paranoid xD
+		});
+	});
+
+	describe("setupListeners", function () {
+		beforeEach(function () {
+			imports.Server.setApp(imports.express());
+			imports.Server.setHttp(imports.http.Server(imports.Server.getApp()));
+			imports.Server.setHttp(imports.io(imports.Server.getHttp()));
+
+			spyOn(imports.Server.getHttp(), "listen");
+			spyOn(imports.Server.getIo(), "on");
+		});
+
+		it("should setup the listener (http and sockets)", function () {
+			imports.Server.setupListeners();
+
+			expect(imports.Server.getHttp().listen).toHaveBeenCalledWith(imports.Server.getApp().get("port"), jasmine.any(Function));
+			expect(imports.Server.getIo().on).toHaveBeenCalledWith("connection", jasmine.any(Function));
 		});
 	});
 });

@@ -11,7 +11,8 @@ var imports = {
 	Config = {
 		apiBase    : "api",
 		environment: imports.Environments.DEV,
-		port       : 9001
+		port    : 9001,
+		testPort: 9002
 	};
 
 module.exports = Config;

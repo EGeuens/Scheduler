@@ -88,6 +88,26 @@ Server.prototype.init = function () {
 	me.setupListeners();
 };
 
+Server.prototype.close = function () {
+	var me = this;
+	if (me.getHttp()) {
+		try {
+			me.getHttp().close();
+		}
+		catch (e) {
+			imports.Logger.warn("http server already closed");
+		}
+	}
+	if (me.getIo()) {
+		try {
+			me.getIo().server.close();
+		}
+		catch (e) {
+			imports.Logger.warn("socket server already closed");
+		}
+	}
+};
+
 Server.prototype.setApp = function (app) {
 	return privates.app = app;
 };

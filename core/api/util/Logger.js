@@ -28,27 +28,23 @@ var imports = {
 				return;
 			}
 
-			//async this for maximum response time on clients!
-			setTimeout(function () {
-				try {
-					var lArgs = imports.HelperFunctions.objToArray(originalArgs),
-						lArg, lMessage;
+			try {
+				var lArgs = imports.HelperFunctions.objToArray(originalArgs),
+					lArg, lMessage;
 
-					for (var i = 0; i < lArgs.length; i++) {
-						lArg = lArgs[i];
-						if (typeof lArg === "object") {
-							lArgs[i] = JSON.stringify(lArg);
-						}
+				for (var i = 0; i < lArgs.length; i++) {
+					lArg = lArgs[i];
+					if (typeof lArg === "object") {
+						lArgs[i] = JSON.stringify(lArg);
 					}
-
-					lMessage = lArgs.join(" ");
-					console[type].call(this, lMessage[color]);
 				}
-				catch (e) {
-					console.error(imports.Messages.ERROR_WHILE_LOGGING, e.stack);
-				}
-			}, 0);
 
+				lMessage = lArgs.join(" ");
+				console[type].call(this, lMessage[color]);
+			}
+			catch (e) {
+				console.error(imports.Messages.ERROR_WHILE_LOGGING, e.stack);
+			}
 		}
 	};
 
@@ -81,19 +77,21 @@ Logger.prototype.LOG_LEVEL_ERROR = 30;
  * Set the severity level of the application
  */
 Logger.prototype.init = function (msg, severity) {
-	console.log(msg[privates.logColors.log]);
+	if(msg){
+		console.log(msg[privates.logColors.log]);
+	}
 	console.log("Initializing logger... Get ready for some fast and furious messaging!!"[privates.logColors.fun], "\nWe're using colors!".rainbow,
 		("\nErrors are in " + privates.logColors.error + ".")[privates.logColors.error], ("Warnings are in " + privates.logColors.warn + ".")[privates.logColors.warn],
 		("Information is in " + privates.logColors.info + ".")[privates.logColors.info], ("Debug messages are in " + privates.logColors.debug + ".")[privates.logColors.debug],
 		("Log messages are in " + privates.logColors.log + ".")[privates.logColors.log], "\nRainbow is for fun :)\n".rainbow);
 
-	this.setSeverity(severity);
+	this.setLogLevel(severity);
 };
 
 /**
  * Set the severity level of the application
  */
-Logger.prototype.setSeverity = function (severity) {
+Logger.prototype.setLogLevel = function (severity) {
 	if (severity !== Logger.prototype.LOG_LEVEL_INFO && severity !== Logger.prototype.LOG_LEVEL_DEBUG && severity !== Logger.prototype.LOG_LEVEL_ERROR) {
 		Logger.prototype.error(imports.Messages.ERROR_UNKNOWN_SEVERITY_LEVEL, ":", severity);
 		severity = 0;
@@ -101,6 +99,13 @@ Logger.prototype.setSeverity = function (severity) {
 
 	privates.logLevel = severity;
 	Logger.prototype.info(imports.Messages.SEVERITY_LEVEL_SET_TO, severity);
+};
+
+/**
+ * Get the severity level of the application
+ */
+Logger.prototype.getLogLevel = function () {
+	return privates.logLevel;
 };
 
 /**

@@ -11,8 +11,8 @@ var imports = {
 		http         : require("http"),
 		io           : require("socket.io"),
 		Config       : require("./Config"),
-		Logger       : require("./util/Logger"),
-		SocketManager: require("./manager/SocketMgr")
+		Environments : require("./enum/Environments"),
+		Logger       : require("./util/Logger")
 
 	},
 	privates = {
@@ -25,27 +25,62 @@ var imports = {
  * @constructor
  */
 var Server = function () {
-	imports.Logger.init("Initializing the Core... Hold on to yo' butts!!", imports.Logger.LOG_LEVEL_DEBUG);
+	var me = this,
+		lLogLevel;
+
+	if (imports.Config.environment === imports.Environments.DEV) {
+		lLogLevel = imports.Logger.LOG_LEVEL_DEBUG;
+	}
+	else if (imports.Config.environment === imports.Environments.PRODUCTION) {
+		lLogLevel = imports.Logger.LOG_LEVEL_ERROR;
+	}
+
+	imports.Logger.init("Initializing the Core... Hold on to yo' butts!!", lLogLevel);
 
 	imports.Logger.info("Ante up server...");
-	privates.app = imports.express();
-	privates.http = imports.http.Server(privates.app);
-	privates.io = imports.io(privates.http);
+	me.setApp(imports.express());
+	me.setHttp(imports.http.Server(me.getApp()));
+	me.setIo(imports.io(me.getHttp()));
 
 	imports.Logger.info("Setting parameters...");
-	privates.app.set("port", imports.Config.port);
+	me.getApp().set("port", imports.Config.port);
 
 	imports.Logger.info("Sharpening ears...");
-	privates.io.on("connection", function (socket) {
+	me.getIo().on("connection", function (socket) {
 		imports.Logger.info("User connected on socket", socket.id);
 	});
-	privates.http.listen(privates.app.get("port"), function () {
+
+	me.getHttp().listen(me.getApp().get("port"), function () {
 		imports.Logger.log("");
 		imports.Logger.info("Ears sharpened!");
-		imports.Logger.log("Server listening on port", privates.app.get("port"));
+		imports.Logger.log("Server listening on port", me.getApp().get("port"));
 
 		imports.Logger.info("Core initialized! It's something :)");
 	});
 };
 
-new Server();
+Server.prototype.setApp = function(app){
+	return privates.app = app;
+};
+
+Server.prototype.getApp = function(){
+	return privates.app;
+};
+
+Server.prototype.setHttp = function(http){
+	return privates.http = http;
+};
+
+Server.prototype.getHttp = function(){
+	return privates.http;
+};
+
+Server.prototype.setIo = function(io){
+	return privates.io = io;
+};
+
+Server.prototype.getIo = function(){
+	return privates.io;
+};
+
+module.exports = new Server();

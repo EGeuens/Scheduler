@@ -1,7 +1,9 @@
 "use strict";
-var HelperFunctions = require("../../../api/util/HelperFunctions");
+var imports = {
+	HelperFunctions: require("../../../api/util/HelperFunctions")
+};
 
-describe("HelperFunctions.", function () {
+describe("HelperFunctions", function () {
 	describe("objToArray", function () {
 		it("should convert an object to an array", function () {
 			var lTestObject = {
@@ -9,12 +11,12 @@ describe("HelperFunctions.", function () {
 				},
 				lExpectedArray = ["value1"];
 
-			expect(HelperFunctions.objToArray(lTestObject)).toEqual(lExpectedArray);
+			expect(imports.HelperFunctions.objToArray(lTestObject)).toEqual(lExpectedArray);
 		});
 		it("should return a non-object", function () {
 			var lTestObject = "value1";
 
-			expect(HelperFunctions.objToArray(lTestObject)).toEqual(lTestObject);
+			expect(imports.HelperFunctions.objToArray(lTestObject)).toEqual(lTestObject);
 		});
 	});
 });

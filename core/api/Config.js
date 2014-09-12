@@ -6,6 +6,7 @@
  * @date 5/09/2014
  */
 var Config = {
+	apiBase: "api",
 	port: 9001
 };
 

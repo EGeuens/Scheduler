@@ -100,7 +100,7 @@ Server.prototype.close = function () {
 	}
 	if (me.getIo()) {
 		try {
-			me.getIo().server.close();
+			me.getIo().close();
 		}
 		catch (e) {
 			imports.Logger.warn("socket server already closed");

@@ -89,7 +89,7 @@ ddescribe("Server", function () {
 		beforeEach(function () {
 			imports.Server.setApp(imports.express());
 			imports.Server.setHttp(imports.http.Server(imports.Server.getApp()));
-			imports.Server.setHttp(imports.io(imports.Server.getHttp()));
+			imports.Server.setIo(imports.io(imports.Server.getHttp()));
 
 			spyOn(imports.Server.getHttp(), "listen");
 			spyOn(imports.Server.getIo(), "on");
@@ -100,6 +100,24 @@ ddescribe("Server", function () {
 
 			expect(imports.Server.getHttp().listen).toHaveBeenCalledWith(imports.Server.getApp().get("port"), jasmine.any(Function));
 			expect(imports.Server.getIo().on).toHaveBeenCalledWith("connection", jasmine.any(Function));
+		});
+	});
+
+	describe("close", function () {
+		beforeEach(function () {
+			imports.Server.setApp(imports.express());
+			imports.Server.setHttp(imports.http.Server(imports.Server.getApp()));
+			imports.Server.setIo(imports.io(imports.Server.getHttp()));
+
+			spyOn(imports.Server.getHttp(), "close");
+			spyOn(imports.Server.getIo(), "close");
+		});
+
+		it("close the connection", function () {
+			imports.Server.close();
+
+			expect(imports.Server.getHttp().close).toHaveBeenCalled();
+			expect(imports.Server.getIo().close).toHaveBeenCalled();
 		});
 	});
 });

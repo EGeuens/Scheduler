@@ -7,12 +7,12 @@
  * @date 5/09/2014
  */
 var imports = {
-		express      : require("express"),
-		http         : require("http"),
-		io           : require("socket.io"),
-		Config       : require("./Config"),
-		Environments : require("./enum/Environments"),
-		Logger       : require("./util/Logger")
+		express     : require("express"),
+		http        : require("http"),
+		io          : require("socket.io"),
+		Config      : require("./Config"),
+		Environments: require("./enum/Environments"),
+		Logger      : require("./util/Logger")
 
 	},
 	privates = {
@@ -24,11 +24,11 @@ var imports = {
 /**
  * @constructor
  */
-var Server = function(){
+var Server = function () {
 	return this;
 };
 
-Server.prototype.init = function () {
+Server.prototype.initLogger = function () {
 	var me = this,
 		lLogLevel;
 
@@ -43,50 +43,72 @@ Server.prototype.init = function () {
 	}
 
 	imports.Logger.init("Initializing the Core... Hold on to yo' butts!!", lLogLevel);
+};
 
-	imports.Logger.info("Ante up server...");
+Server.prototype.prepareServer = function () {
+	var me = this;
+
+	imports.Logger.info("Preparing server...");
 	me.setApp(imports.express());
 	me.setHttp(imports.http.Server(me.getApp()));
 	me.setIo(imports.io(me.getHttp()));
 
+};
+
+Server.prototype.setupParameters = function () {
+	var me = this;
 	imports.Logger.info("Setting parameters...");
 	me.getApp().set("port", imports.Config.port);
+};
+Server.prototype.setupListeners = function () {
+	var me = this;
 
 	imports.Logger.info("Sharpening ears...");
-	me.getIo().on("connection", function (socket) {
+	var tmpIoConnCB = function (socket) {
 		imports.Logger.info("User connected on socket", socket.id);
-	});
+	};
+	me.getIo().on("connection", tmpIoConnCB);
 
-	me.getHttp().listen(me.getApp().get("port"), function () {
-		imports.Logger.log("");
+	var tmpHttpListenCB = function () {
+		imports.Logger.log(""); // print newline
 		imports.Logger.info("Ears sharpened!");
 		imports.Logger.log("Server listening on port", me.getApp().get("port"));
 
 		imports.Logger.info("Core initialized! It's something :)");
-	});
+	};
+	me.getHttp().listen(me.getApp().get("port"), tmpHttpListenCB);
 };
 
-Server.prototype.setApp = function(app){
+Server.prototype.init = function () {
+	var me = this;
+
+	me.initLogger();
+	me.prepareServer();
+	me.setupParameters();
+	me.setupListeners();
+};
+
+Server.prototype.setApp = function (app) {
 	return privates.app = app;
 };
 
-Server.prototype.getApp = function(){
+Server.prototype.getApp = function () {
 	return privates.app;
 };
 
-Server.prototype.setHttp = function(http){
+Server.prototype.setHttp = function (http) {
 	return privates.http = http;
 };
 
-Server.prototype.getHttp = function(){
+Server.prototype.getHttp = function () {
 	return privates.http;
 };
 
-Server.prototype.setIo = function(io){
+Server.prototype.setIo = function (io) {
 	return privates.io = io;
 };
 
-Server.prototype.getIo = function(){
+Server.prototype.getIo = function () {
 	return privates.io;
 };
 

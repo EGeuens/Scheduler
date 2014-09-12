@@ -24,7 +24,9 @@ var imports = {
 		},
 
 		doLog: function (type, lvl, originalArgs, color) {
-			if (privates.logLevel > lvl) {
+			var me = this;
+
+			if (me.getLogLevel() > lvl) {
 				return;
 			}
 
@@ -98,7 +100,7 @@ Logger.prototype.init = function (msg, severity) {
  * Set the severity level of the application
  */
 Logger.prototype.setLogLevel = function (severity) {
-	if (severity !== Logger.prototype.LOG_LEVEL_INFO && severity !== Logger.prototype.LOG_LEVEL_DEBUG && severity !== Logger.prototype.LOG_LEVEL_ERROR) {
+	if (severity !== Logger.prototype.LOG_LEVEL_INFO && severity !== Logger.prototype.LOG_LEVEL_DEBUG && severity !== Logger.prototype.LOG_LEVEL_ERROR && severity !== Logger.prototype.LOG_LEVEL_NONE) {
 		Logger.prototype.error(imports.Messages.ERROR_UNKNOWN_SEVERITY_LEVEL, ":", severity);
 		severity = Logger.prototype.LOG_LEVEL_NONE;
 	}
@@ -118,35 +120,40 @@ Logger.prototype.getLogLevel = function () {
  * Log a general message
  */
 Logger.prototype.log = function () {
-	privates.doLog("log", privates.logLevel, arguments, privates.logColors.log);
+	var me = this;
+	privates.doLog.call(me, "log", me.getLogLevel(), arguments, privates.logColors.log);
 };
 
 /**
  * Log an informative message
  */
 Logger.prototype.info = function () {
-	privates.doLog("info", Logger.prototype.LOG_LEVEL_INFO, arguments, privates.logColors.info);
+	var me = this;
+	privates.doLog.call(me, "info", Logger.prototype.LOG_LEVEL_INFO, arguments, privates.logColors.info);
 };
 
 /**
  * Log a warning message
  */
 Logger.prototype.warn = function () {
-	privates.doLog("log", Logger.prototype.LOG_LEVEL_INFO, arguments, privates.logColors.warn);
+	var me = this;
+	privates.doLog.call(me, "log", Logger.prototype.LOG_LEVEL_INFO, arguments, privates.logColors.warn);
 };
 
 /**
  * Log an error message
  */
 Logger.prototype.error = function () {
-	privates.doLog("error", Logger.prototype.LOG_LEVEL_ERROR, arguments, privates.logColors.error);
+	var me = this;
+	privates.doLog.call(me, "error", Logger.prototype.LOG_LEVEL_ERROR, arguments, privates.logColors.error);
 };
 
 /**
  * Log a debug message
  */
 Logger.prototype.debug = function () {
-	privates.doLog("info", Logger.prototype.LOG_LEVEL_DEBUG, arguments, privates.logColors.debug);
+	var me = this;
+	privates.doLog.call(me, "info", Logger.prototype.LOG_LEVEL_DEBUG, arguments, privates.logColors.debug);
 };
 
 module.exports = new Logger();

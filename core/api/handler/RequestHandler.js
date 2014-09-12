@@ -1,7 +1,7 @@
 "use strict";
 /**
- * Handles all incoming and outgoing requests!
- * @class RequestHandler
+ * Handles all incoming and outgoing requests! TODO - finish him!
+ * @class {core.api.handler.RequestHandler}
  * @author Erwin
  * @date 12/09/2014
  */
@@ -14,6 +14,7 @@ var imports = {
 		ApiHandler : new imports.ApiHandler(),
 		FileHandler: new imports.FileHandler()
 	};
+
 /**
  * @constructor
  */
@@ -21,14 +22,13 @@ var RequestHandler = function () {
 	return this;
 };
 
-RequestHandler.prototype.getApiHandler = function () {
-	return privates.ApiHandler;
-};
-
-RequestHandler.prototype.getFileHandler = function () {
-	return privates.FileHandler;
-};
-
+////
+// Public methods
+////
+/**
+ * Handles the incoming request
+ * @param url {String}
+ */
 RequestHandler.prototype.handle = function (url) {
 	var me = this,
 		lUrlParts = url.split("/"),
@@ -48,4 +48,22 @@ RequestHandler.prototype.handle = function (url) {
 	lHandler.handle("/" + lUrlParts.join("/"));
 };
 
+////
+// Getters/Setters
+////
+/**
+ * @returns {core.api.handler.ApiHandler}
+ */
+RequestHandler.prototype.getApiHandler = function () {
+	return privates.ApiHandler;
+};
+
+/**
+ * @returns {core.api.handler.FileHandler}
+ */
+RequestHandler.prototype.getFileHandler = function () {
+	return privates.FileHandler;
+};
+
+//module.exports = RequestHandler; means that this is just an ordinary class
 module.exports = RequestHandler;

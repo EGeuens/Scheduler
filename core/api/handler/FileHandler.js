@@ -1,7 +1,7 @@
 "use strict";
 /**
- *
- * @class FileHandler
+ * TODO - finish him!
+ * @class {core.api.handler.FileHandler}
  * @author Erwin
  * @date 12/09/2014
  */

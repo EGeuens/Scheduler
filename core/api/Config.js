@@ -7,8 +7,9 @@
  */
 var imports = {
 		Environments: require("./enum/Environments")
-	},
-	Config = {
+};
+
+var Config = {
 		apiBase    : "api",
 		environment: imports.Environments.DEV,
 		port    : 9001,

@@ -1,7 +1,7 @@
 "use strict";
 /**
- *
- * @class ApiHandler
+ * TODO - finish him!
+ * @class core.api.handler.ApiHandler
  * @author Erwin
  * @date 12/09/2014
  */

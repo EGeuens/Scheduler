@@ -1,6 +1,6 @@
 "use strict";
 /**
- *
+ * Nifty doo-a-ma-things that help in any way possible
  * @class core.api.util.HelperFunctions
  * @author Erwin
  * @date 5/09/2014
@@ -16,6 +16,9 @@ var HelperFunctions = function () {
 	return this;
 };
 
+////
+// Public methods
+////
 /**
  * Converts an object to an array.
  * @param {Object} obj The object to convert
@@ -37,4 +40,5 @@ HelperFunctions.prototype.objToArray = function (obj) {
 	return lRetArr;
 };
 
+//module.exports = new HelperFunctions(); means this is a static (!) class
 module.exports = new HelperFunctions();

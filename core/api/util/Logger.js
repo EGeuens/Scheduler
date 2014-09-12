@@ -5,7 +5,6 @@
  * @author Erwin
  * @date 5/09/2014
  */
-
 var imports = {
 		colors         : require("colors"),
 		HelperFunctions: require("./HelperFunctions"),
@@ -61,38 +60,46 @@ function Logger() {
 	return me;
 }
 
-/**
- * Log level severity used for testing
- * @type {number}
- */
-Logger.prototype.LOG_LEVEL_TEST = 0; //show everything!
-
+////
+// Public properties
+////
 /**
  * Log level severity used for debugging
- * @type {number}
- */
-Logger.prototype.LOG_LEVEL_NONE = 9999;
-
-/**
- * Log level severity used for debugging
- * @type {number}
+ * @type {Number}
  */
 Logger.prototype.LOG_LEVEL_DEBUG = 10;
 
 /**
- * Log level severity used for informative messages
- * @type {number}
- */
-Logger.prototype.LOG_LEVEL_INFO = 20;
-
-/**
  * Log level severity used for error messages
- * @type {number}
+ * @type {Number}
  */
 Logger.prototype.LOG_LEVEL_ERROR = 30;
 
 /**
- * Set the severity level of the application
+ * Log level severity used for informative messages
+ * @type {Number}
+ */
+Logger.prototype.LOG_LEVEL_INFO = 20;
+
+/**
+ * Default log level. No messages will be logged if this is set!
+ * @type {Number}
+ */
+Logger.prototype.LOG_LEVEL_NONE = 9999;
+
+/**
+ * Log level severity used for testing
+ * @type {Number}
+ */
+Logger.prototype.LOG_LEVEL_TEST = 0; //show everything!
+
+////
+// Public methods
+////
+/**
+ * Initialises the logger
+ * @param {String} [msg] The startup message
+ * @param {Number} [severity] The severity of the logging (LOG_LEVEL_XXX)
  */
 Logger.prototype.init = function (msg, severity) {
 	if(msg){
@@ -107,7 +114,51 @@ Logger.prototype.init = function (msg, severity) {
 };
 
 /**
+ * Log a debug message
+ */
+Logger.prototype.debug = function () {
+	var me = this;
+	privates.doLog.call(me, "info", Logger.prototype.LOG_LEVEL_DEBUG, arguments, privates.logColors.debug);
+};
+
+/**
+ * Log an error message
+ */
+Logger.prototype.error = function () {
+	var me = this;
+	privates.doLog.call(me, "error", Logger.prototype.LOG_LEVEL_ERROR, arguments, privates.logColors.error);
+};
+
+/**
+ * Log an informative message
+ */
+Logger.prototype.info = function () {
+	var me = this;
+	privates.doLog.call(me, "info", Logger.prototype.LOG_LEVEL_INFO, arguments, privates.logColors.info);
+};
+
+/**
+ * Log a general message
+ */
+Logger.prototype.log = function () {
+	var me = this;
+	privates.doLog.call(me, "log", me.getLogLevel(), arguments, privates.logColors.log);
+};
+
+/**
+ * Log a warning message
+ */
+Logger.prototype.warn = function () {
+	var me = this;
+	privates.doLog.call(me, "log", Logger.prototype.LOG_LEVEL_INFO, arguments, privates.logColors.warn);
+};
+
+////
+// Getters/Setters
+////
+/**
  * Set the severity level of the application
+ * @param {Number} severity The severity of the logging (LOG_LEVEL_XXX)
  */
 Logger.prototype.setLogLevel = function (severity) {
 	var me = this;
@@ -124,49 +175,11 @@ Logger.prototype.setLogLevel = function (severity) {
 
 /**
  * Get the severity level of the application
+ * @return {Number}
  */
 Logger.prototype.getLogLevel = function () {
 	return privates.logLevel;
 };
 
-/**
- * Log a general message
- */
-Logger.prototype.log = function () {
-	var me = this;
-	privates.doLog.call(me, "log", me.getLogLevel(), arguments, privates.logColors.log);
-};
-
-/**
- * Log an informative message
- */
-Logger.prototype.info = function () {
-	var me = this;
-	privates.doLog.call(me, "info", Logger.prototype.LOG_LEVEL_INFO, arguments, privates.logColors.info);
-};
-
-/**
- * Log a warning message
- */
-Logger.prototype.warn = function () {
-	var me = this;
-	privates.doLog.call(me, "log", Logger.prototype.LOG_LEVEL_INFO, arguments, privates.logColors.warn);
-};
-
-/**
- * Log an error message
- */
-Logger.prototype.error = function () {
-	var me = this;
-	privates.doLog.call(me, "error", Logger.prototype.LOG_LEVEL_ERROR, arguments, privates.logColors.error);
-};
-
-/**
- * Log a debug message
- */
-Logger.prototype.debug = function () {
-	var me = this;
-	privates.doLog.call(me, "info", Logger.prototype.LOG_LEVEL_DEBUG, arguments, privates.logColors.debug);
-};
-
+// module.exports = new Logger(); means this is a static (!) class
 module.exports = new Logger();

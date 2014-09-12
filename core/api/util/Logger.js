@@ -9,7 +9,7 @@
 var imports = {
 		colors         : require("colors"),
 		HelperFunctions: require("./HelperFunctions"),
-		Messages       : require("../enum/Messages")
+		messages: require("../enum/messages")
 	},
 	privates = {
 		logLevel: undefined,
@@ -32,7 +32,7 @@ var imports = {
 
 			try {
 				var lArgs = imports.HelperFunctions.objToArray(originalArgs),
-					lArg, lMessage;
+					lArg, lmessage;
 
 				for (var i = 0; i < lArgs.length; i++) {
 					lArg = lArgs[i];
@@ -41,11 +41,11 @@ var imports = {
 					}
 				}
 
-				lMessage = lArgs.join(" ");
-				console[type].call(this, lMessage[color]);
+				lmessage = lArgs.join(" ");
+				console[type].call(this, lmessage[color]);
 			}
 			catch (e) {
-				console.error(imports.Messages.ERROR_WHILE_LOGGING, e.stack);
+				console.error(imports.messages.ERROR_WHILE_LOGGING, e.stack);
 			}
 		}
 	};
@@ -60,6 +60,12 @@ function Logger() {
 
 	return me;
 }
+
+/**
+ * Log level severity used for testing
+ * @type {number}
+ */
+Logger.prototype.LOG_LEVEL_TEST = 0; //show everything!
 
 /**
  * Log level severity used for debugging
@@ -104,13 +110,16 @@ Logger.prototype.init = function (msg, severity) {
  * Set the severity level of the application
  */
 Logger.prototype.setLogLevel = function (severity) {
-	if (severity !== Logger.prototype.LOG_LEVEL_INFO && severity !== Logger.prototype.LOG_LEVEL_DEBUG && severity !== Logger.prototype.LOG_LEVEL_ERROR && severity !== Logger.prototype.LOG_LEVEL_NONE) {
-		Logger.prototype.error(imports.Messages.ERROR_UNKNOWN_SEVERITY_LEVEL, ":", severity);
-		severity = Logger.prototype.LOG_LEVEL_NONE;
+	var me = this;
+	if (severity !== me.LOG_LEVEL_INFO && severity !== me.LOG_LEVEL_DEBUG && severity !== me.LOG_LEVEL_ERROR && severity !== me.LOG_LEVEL_NONE && severity !== me.LOG_LEVEL_TEST) {
+		me.error(imports.messages.ERROR_UNKNOWN_SEVERITY_LEVEL, ":", severity);
+		severity = me.LOG_LEVEL_NONE;
 	}
 
 	privates.logLevel = severity;
-	Logger.prototype.info(imports.Messages.SEVERITY_LEVEL_SET_TO, severity);
+	if (severity !== me.LOG_LEVEL_TEST) { // suppress info message for testing
+		me.info(imports.messages.SEVERITY_LEVEL_SET_TO, severity);
+	}
 };
 
 /**

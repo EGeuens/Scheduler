@@ -9,7 +9,7 @@ var imports = {
 	io          : require("socket.io")
 };
 
-ddescribe("Server", function () {
+describe("Server", function () {
 	beforeEach(function () {
 		//setup test environment for the server
 		imports.Config.environment = imports.Environments.TEST;

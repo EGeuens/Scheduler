@@ -38,10 +38,11 @@ describe("User model", function () {
 			expect(lUser.email).toBe(lUserConf.email);
 		});
 
-		it("should log an warning for an invalid property", function () {
+		it("should log a warning for an invalid property", function () {
 			var lUserConf = {
 					id                       : 123,
 					name                     : "Test",
+					firstName: "Testerke",
 					username                 : "Tester123",
 					email                    : "123@test.tst",
 					invalid_property_for_user: false
@@ -52,6 +53,7 @@ describe("User model", function () {
 
 			expect(lUser.id).toBe(lUserConf.id);
 			expect(lUser.name).toBe(lUserConf.name);
+			expect(lUser.firstName).toBe(lUserConf.firstName);
 			expect(lUser.username).toBe(lUserConf.username);
 			expect(lUser.email).toBe(lUserConf.email);
 			expect(lUser.invalid_property_for_user).toBeUndefined();
@@ -75,6 +77,16 @@ describe("User model", function () {
 
 			lUser.setName(lName);
 			expect(lUser.getName()).toBe(lName);
+		});
+	});
+
+	describe("setFirstName", function () {
+		it("should set the firstname", function () {
+			var lUser = new imports.User(),
+				lName = "tester";
+
+			lUser.setFirstName(lName);
+			expect(lUser.getFirstName()).toBe(lName);
 		});
 	});
 

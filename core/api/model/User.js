@@ -13,10 +13,11 @@ var imports = {
 	},
 	privates = {
 		defaults: {
-			id      : null,
-			name    : "",
-			username: "",
-			email   : ""
+			id       : null,
+			name     : "",
+			firstName: "",
+			username : "",
+			email    : ""
 		}
 	};
 
@@ -86,6 +87,14 @@ User.prototype.getEmail = function () {
 
 User.prototype.setEmail = function (email) {
 	return this.email = email;
+};
+
+User.prototype.getFirstName = function () {
+	return this.firstName;
+};
+
+User.prototype.setFirstName = function (firstName) {
+	return this.firstName = firstName;
 };
 
 module.exports = User;

@@ -22,22 +22,13 @@ var HelperFunctions = function () {
 /**
  * Converts an object to an array.
  * @param {Object} obj The object to convert
- * @returns {Object | Array} The converted array or obj when it's not an object
+ * @returns {Object | Array} The converted array or obj when it's not of a real object
  */
 HelperFunctions.prototype.objToArray = function (obj) {
-	var lKey, lRetArr = [];
-
 	if (!imports._.isObject(obj)) {
 		return obj;
 	}
-
-	for (lKey in obj) {
-		if (obj.hasOwnProperty(lKey)) {
-			lRetArr.push(obj[lKey]);
-		}
-	}
-
-	return lRetArr;
+	return imports._.toArray(obj);
 };
 
 //module.exports = new HelperFunctions(); means this is a static (!) class

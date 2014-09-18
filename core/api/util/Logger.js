@@ -31,7 +31,7 @@ var imports = {
 
 			try {
 				var lArgs = imports.HelperFunctions.objToArray(originalArgs),
-					lArg, lmessage;
+					lArg, lMsg;
 
 				for (var i = 0; i < lArgs.length; i++) {
 					lArg = lArgs[i];
@@ -40,8 +40,8 @@ var imports = {
 					}
 				}
 
-				lmessage = lArgs.join(" ");
-				console[type].call(this, lmessage[color]);
+				lMsg = lArgs.join(" ");
+				console[type].call(this, lMsg[color]);
 			}
 			catch (e) {
 				console.error(imports.messages.ERROR_WHILE_LOGGING, e.stack);

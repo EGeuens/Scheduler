@@ -1,18 +1,22 @@
 "use strict";
 var imports = {
-	Logger: require("../../../api/util/Logger")
-},
+		Logger: require("../../../api/util/Logger")
+	},
 	privates = {
 		initMessage: "Hello init!",
 		logLevel: imports.Logger.LOG_LEVEL_DEBUG
 	};
 
 describe("Logger", function () {
+	var lConsoleLog = console.log;
 	describe("init", function () {
-		beforeEach(function(){
+		beforeEach(function () {
 			spyOn(imports.Logger, "setLogLevel");
-			console.log = function(){};
+			console.log = function () {};
 			spyOn(console, "log");
+		});
+		afterEach(function () {
+			console.log = lConsoleLog;
 		});
 
 		it("should initialise the logger without params", function () {
@@ -41,6 +45,9 @@ describe("Logger", function () {
 			spyOn(imports.Logger, "info");
 			console.log = function () {};
 			spyOn(console, "log");
+		});
+		afterEach(function () {
+			console.log = lConsoleLog;
 		});
 
 		it("should set the level to LOG_LEVEL_NONE without params", function () {
@@ -87,6 +94,9 @@ describe("Logger", function () {
 			spyOn(console, "log");
 			imports.Logger.setLogLevel(imports.Logger.LOG_LEVEL_TEST);
 		});
+		afterEach(function () {
+			console.log = lConsoleLog;
+		});
 
 		it("should call console.log with specified parameter (color: black)", function () {
 			var lText = "Hello";
@@ -130,6 +140,9 @@ describe("Logger", function () {
 			console.log = function () {};
 			spyOn(console, "log");
 			imports.Logger.setLogLevel(imports.Logger.LOG_LEVEL_TEST);
+		});
+		afterEach(function () {
+			console.log = lConsoleLog;
 		});
 
 		it("should call console.log with specified parameter (color: yellow)", function () {

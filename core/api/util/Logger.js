@@ -158,7 +158,7 @@ Logger.prototype.warn = function () {
 ////
 /**
  * Set the severity level of the application
- * @param {Number} severity The severity of the logging (LOG_LEVEL_XXX)
+ * @param {Number} [severity] The severity of the logging (LOG_LEVEL_XXX)
  */
 Logger.prototype.setLogLevel = function (severity) {
 	var me = this;

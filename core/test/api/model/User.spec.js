@@ -1,7 +1,8 @@
 "use strict";
 var imports = {
-	Logger: require("../../../api/util/Logger"),
-	User  : require("../../../api/model/User")
+	Logger   : require("../../../api/util/Logger"),
+	Validator: require("../../../api/util/Validator"),
+	User     : require("../../../api/model/User")
 };
 
 describe("User model", function () {
@@ -26,7 +27,7 @@ describe("User model", function () {
 					id      : 123,
 					name    : "Test",
 					username: "Tester123",
-					email   : "123@test.tst"
+					email: "tester@test.com"
 				},
 				lUser = new imports.User(lUserConf);
 
@@ -44,7 +45,7 @@ describe("User model", function () {
 					name                     : "Test",
 					firstName: "Testerke",
 					username                 : "Tester123",
-					email                    : "123@test.tst",
+					email    : "tester@test.com",
 					invalid_property_for_user: false
 				},
 				lUser = new imports.User(lUserConf);
@@ -81,7 +82,7 @@ describe("User model", function () {
 	});
 
 	describe("setFirstName", function () {
-		it("should set the firstname", function () {
+		it("should set the first name", function () {
 			var lUser = new imports.User(),
 				lName = "tester";
 
@@ -103,10 +104,89 @@ describe("User model", function () {
 	describe("setEmail", function () {
 		it("should set the email address", function () {
 			var lUser = new imports.User(),
-				lEmail = "tester@123.com";
+				lEmail = "tester@test.com";
 
 			lUser.setEmail(lEmail);
 			expect(lUser.getEmail()).toBe(lEmail);
+		});
+	});
+
+	describe("find", function () {
+		it("should find a user by an id", function () {
+			var lUser = new imports.User({
+					id: 123
+				}),
+				lExpectedUser = new imports.User({
+					id       : 123,
+					name     : "tester",
+					firstName: "tester",
+					username : "tester123",
+					email    : "tester@test.com"
+				});
+
+			lUser.find();
+			expect(lUser.getId()).toBe(lExpectedUser.getId());
+			expect(lUser.getName()).toBe(lExpectedUser.getName());
+			expect(lUser.getFirstName()).toBe(lExpectedUser.getFirstName());
+			expect(lUser.getUsername()).toBe(lExpectedUser.getUsername());
+			expect(lUser.getEmail()).toBe(lExpectedUser.getEmail());
+		});
+	});
+
+	describe("validate", function () {
+		beforeEach(function () {
+			spyOn(imports.Validator, "validateModel").andCallThrough();
+		});
+		it("should return true for a valid model", function () {
+			var lUser = new imports.User({
+					id       : 123,
+					name     : "tester",
+					firstName: "tester",
+					username : "tester123",
+					email    : "tester@test.com"
+				}),
+				lResult,
+				lExpectedUser = new imports.User({
+					id       : 123,
+					name     : "tester",
+					firstName: "tester",
+					username : "tester123",
+					email    : "tester@test.com"
+				});
+
+			lResult = lUser.validate();
+			expect(imports.Validator.validateModel).toHaveBeenCalled();
+			expect(lResult).toBe(true);
+
+			expect(lUser.getId()).toBe(lExpectedUser.getId());
+			expect(lUser.getName()).toBe(lExpectedUser.getName());
+			expect(lUser.getFirstName()).toBe(lExpectedUser.getFirstName());
+			expect(lUser.getUsername()).toBe(lExpectedUser.getUsername());
+			expect(lUser.getEmail()).toBe(lExpectedUser.getEmail());
+		});
+
+		it("should return false for an empty model", function () {
+			var lUser = new imports.User(),
+				lResult;
+
+			lResult = lUser.validate();
+			expect(imports.Validator.validateModel).toHaveBeenCalled();
+			expect(lResult).toBe(false);
+		});
+
+		it("should return false for an invalid model", function () {
+			var lUser = new imports.User({
+					id       : "aString",
+					name     : "tester",
+					firstName: "tester",
+					username : "tester123",
+					email    : "tester@test.com"
+				}),
+				lResult;
+
+			lResult = lUser.validate();
+			expect(imports.Validator.validateModel).toHaveBeenCalled();
+			expect(lResult).toBe(false);
 		});
 	});
 });

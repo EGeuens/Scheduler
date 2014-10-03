@@ -12,7 +12,8 @@ var imports = {
 		io          : require("socket.io"),
 		Config      : require("./Config"),
 		Environments: require("./enum/Environments"),
-		Logger      : require("./util/Logger")
+		Logger      : require("./util/Logger"),
+		FileHandler : require("./handler/FileHandler")
 
 	},
 	privates = {
@@ -115,7 +116,11 @@ Server.prototype.setupListeners = function () {
 		imports.Logger.info("Ears sharpened!");
 		imports.Logger.log("Server listening on port", me.getApp().get("port"));
 
+		//for core module send files from /core/app
+		privates.app.use("/", imports.FileHandler("/", __dirname + "/../app"));
+
 		imports.Logger.info("Core initialized! It's something :)");
+
 	};
 	me.getHttp().listen(me.getApp().get("port"), tmpHttpListenCB);
 };

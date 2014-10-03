@@ -28,10 +28,10 @@ var RequestHandler = function () {
 /**
  * Handles the incoming request
  * @param url {String}
+ * @param context {Object}
  */
-RequestHandler.prototype.handle = function (url) {
-	var me = this,
-		lUrlParts = url.split("/"),
+RequestHandler.prototype.handle = function (url, context) {
+	var lUrlParts = url.split("/"),
 		lIsApiCall, lHandler;
 
 	lUrlParts.shift();
@@ -39,13 +39,10 @@ RequestHandler.prototype.handle = function (url) {
 
 	if (lIsApiCall) {
 		lUrlParts.shift();
-		lHandler = me.getApiHandler();
-	}
-	else {
-		lHandler = me.getFileHandler();
+		lHandler = RequestHandler.prototype.getApiHandler();
+		lHandler.handle("/" + lUrlParts.join("/"), context);
 	}
 
-	lHandler.handle("/" + lUrlParts.join("/"));
 };
 
 ////
@@ -58,12 +55,5 @@ RequestHandler.prototype.getApiHandler = function () {
 	return privates.ApiHandler;
 };
 
-/**
- * @returns {core.api.handler.FileHandler}
- */
-RequestHandler.prototype.getFileHandler = function () {
-	return privates.FileHandler;
-};
-
 //module.exports = RequestHandler; means that this is just an ordinary class
-module.exports = RequestHandler;
+module.exports = new RequestHandler();

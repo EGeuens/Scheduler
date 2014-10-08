@@ -10,6 +10,22 @@ var imports = {
 };
 
 describe("Server", function () {
+	var lModules = [
+		{
+			name       : "Core",
+			version    : "0.1",
+			rootPath   : "/core",
+			apiPath    : "/",
+			"publicDir": "/app"
+		},
+		{
+			name       : "Scheduler",
+			version    : "0.1",
+			rootPath   : "/scheduler",
+			"publicDir": "/app"
+		}
+	];
+
 	beforeEach(function () {
 		//setup test environment for the server
 		imports.Config.environment = imports.Environments.TEST;
@@ -22,6 +38,7 @@ describe("Server", function () {
 
 	describe("init", function () {
 		beforeEach(function () {
+			spyOn(imports.Logger, "log"); // prevent log from showing up in tests
 			spyOn(imports.Server, "initLogger");
 			spyOn(imports.Server, "prepareServer");
 			spyOn(imports.Server, "setupParameters");
@@ -86,15 +103,31 @@ describe("Server", function () {
 			imports.Server.setHttp(imports.http.Server(imports.Server.getApp()));
 			imports.Server.setIo(imports.io(imports.Server.getHttp()));
 
-			spyOn(imports.Server.getHttp(), "listen");
-			spyOn(imports.Server.getIo(), "on");
+			spyOn(imports.Server, "setupRoutes");
+			spyOn(imports.Server, "setupSockets");
 		});
 
 		it("should setup the listener (http and sockets)", function () {
-			imports.Server.setupListeners();
+			var lModules = [
+				{
+					name       : "Core",
+					version    : "0.1",
+					rootPath   : "/core",
+					apiPath    : "/",
+					"publicDir": "/app"
+				},
+				{
+					name       : "Scheduler",
+					version    : "0.1",
+					rootPath   : "/scheduler",
+					"publicDir": "/app"
+				}
+			];
 
-			expect(imports.Server.getHttp().listen).toHaveBeenCalledWith(imports.Server.getApp().get("port"), jasmine.any(Function));
-			expect(imports.Server.getIo().on).toHaveBeenCalledWith("connection", jasmine.any(Function));
+			imports.Server.setupListeners(lModules);
+
+			expect(imports.Server.setupRoutes).toHaveBeenCalledWith(lModules);
+			expect(imports.Server.setupSockets).toHaveBeenCalledWith(lModules);
 		});
 	});
 
@@ -113,6 +146,70 @@ describe("Server", function () {
 
 			expect(imports.Server.getHttp().close).toHaveBeenCalled();
 			expect(imports.Server.getIo().close).toHaveBeenCalled();
+		});
+	});
+
+	describe("setupRoutes", function () {
+		beforeEach(function () {
+			spyOn(imports.Logger, "log"); // prevent log from showing up in tests
+
+			imports.Server.setApp(imports.express());
+			imports.Server.setHttp(imports.http.Server(imports.Server.getApp()));
+			imports.Server.setIo(imports.io(imports.Server.getHttp()));
+
+			spyOn(imports.Server, "completeSetup");
+			spyOn(imports.Server.getHttp(), "listen").andCallFake(function (port, cb) {
+				cb();
+			});
+		});
+
+		it("should setup the listener (http)", function () {
+			imports.Server.setupRoutes(lModules);
+
+			expect(imports.Server.getHttp().listen).toHaveBeenCalled();
+			expect(imports.Server.completeSetup).toHaveBeenCalledWith("setupRoutes");
+		});
+	});
+
+	describe("setupSockets", function () {
+		var lSocket = {};
+
+		beforeEach(function () {
+			spyOn(imports.Logger, "log"); // prevent log from showing up in tests
+
+			imports.Server.setApp(imports.express());
+			imports.Server.setHttp(imports.http.Server(imports.Server.getApp()));
+			imports.Server.setIo(imports.io(imports.Server.getHttp()));
+
+			spyOn(imports.Server, "completeSetup");
+			spyOn(imports.Server.getIo(), "on").andCallFake(function (event, cb) {
+				cb(lSocket);
+			});
+		});
+
+		it("should setup the listener (sockets)", function () {
+			imports.Server.setupSockets(lModules);
+
+			expect(imports.Server.getIo().on).toHaveBeenCalled();
+			expect(imports.Server.completeSetup).toHaveBeenCalledWith("setupSockets");
+		});
+	});
+
+	describe("completeSetup", function () {
+		var lSocket = {};
+
+		beforeEach(function () {
+			spyOn(imports.Logger, "log"); // prevent log from showing up in tests
+			spyOn(imports.Logger, "success");
+		});
+
+		it("should wait until all expected parts have called the function to log a success message", function () {
+			imports.Server.completeSetup("setupSockets");
+			expect(imports.Logger.success).not.toHaveBeenCalled();
+
+			imports.Server.completeSetup("setupRoutes");
+			expect(imports.Logger.success).toHaveBeenCalled();
+
 		});
 	});
 });

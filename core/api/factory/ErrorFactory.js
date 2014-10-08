@@ -22,5 +22,5 @@ ErrorFactory.prototype.create = function () {
 	return new Error(lMsg.join(" "));
 };
 
-//module.exports = new Server(); means this is a static (!) class
+//module.exports = new ErrorFactory(); means this is a static (!) class
 module.exports = new ErrorFactory();

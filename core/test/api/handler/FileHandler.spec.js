@@ -16,15 +16,34 @@ describe("FileHandler.", function () {
 			lNext = jasmine.createSpy("next"),
 			lSendFile = jasmine.createSpy("sendFile");
 
-		lFileHandler({ originalUrl: "/existingFile.txt"}, { sendFile: lSendFile }, lNext);
-
 		spyOn(imports.Logger, "debug");
 		spyOn(imports.fs, "exists").andCallFake(function (path, callback) {
 			callback(true);
 		});
+
+		lFileHandler({ originalUrl: "/existingFile.txt"}, { sendFile: lSendFile }, lNext);
+
 		expect(lNext).not.toHaveBeenCalled();
 		expect(imports.fs.exists).toHaveBeenCalled();
 		expect(imports.Logger.debug).toHaveBeenCalled();
 		expect(lSendFile).toHaveBeenCalled();
+	});
+
+	it("should not send a non-existing file", function () {
+		var lFileHandler = new imports.FileHandler(privates.rootPath, privates.basePath),
+			lNext = jasmine.createSpy("next"),
+			lSendFile = jasmine.createSpy("sendFile");
+
+		spyOn(imports.Logger, "debug");
+		spyOn(imports.fs, "exists").andCallFake(function (path, callback) {
+			callback(false);
+		});
+
+		lFileHandler({ originalUrl: "/nonExistingFile.txt"}, { sendFile: lSendFile }, lNext);
+
+		expect(lNext).toHaveBeenCalled();
+		expect(imports.fs.exists).toHaveBeenCalled();
+		expect(imports.Logger.debug).not.toHaveBeenCalled();
+		expect(lSendFile).not.toHaveBeenCalled();
 	});
 });

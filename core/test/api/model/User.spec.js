@@ -27,7 +27,7 @@ describe("User model", function () {
 					id      : 123,
 					name    : "Test",
 					username: "Tester123",
-					email: "tester@test.com"
+					email   : "tester@test.com"
 				},
 				lUser = new imports.User(lUserConf);
 
@@ -43,9 +43,9 @@ describe("User model", function () {
 			var lUserConf = {
 					id                       : 123,
 					name                     : "Test",
-					firstName: "Testerke",
+					firstName                : "Testerke",
 					username                 : "Tester123",
-					email    : "tester@test.com",
+					email                    : "tester@test.com",
 					invalid_property_for_user: false
 				},
 				lUser = new imports.User(lUserConf);
@@ -134,9 +134,6 @@ describe("User model", function () {
 	});
 
 	describe("validate", function () {
-		beforeEach(function () {
-			spyOn(imports.Validator, "validateModel").andCallThrough();
-		});
 		it("should return true for a valid model", function () {
 			var lUser = new imports.User({
 					id       : 123,
@@ -154,6 +151,10 @@ describe("User model", function () {
 					email    : "tester@test.com"
 				});
 
+			spyOn(imports.Validator, "validateModel").andCallFake(function () {
+				return true;
+			});
+
 			lResult = lUser.validate();
 			expect(imports.Validator.validateModel).toHaveBeenCalled();
 			expect(lResult).toBe(true);
@@ -169,6 +170,10 @@ describe("User model", function () {
 			var lUser = new imports.User(),
 				lResult;
 
+			spyOn(imports.Validator, "validateModel").andCallFake(function () {
+				return false;
+			});
+
 			lResult = lUser.validate();
 			expect(imports.Validator.validateModel).toHaveBeenCalled();
 			expect(lResult).toBe(false);
@@ -183,6 +188,10 @@ describe("User model", function () {
 					email    : "tester@test.com"
 				}),
 				lResult;
+
+			spyOn(imports.Validator, "validateModel").andCallFake(function () {
+				return false;
+			});
 
 			lResult = lUser.validate();
 			expect(imports.Validator.validateModel).toHaveBeenCalled();

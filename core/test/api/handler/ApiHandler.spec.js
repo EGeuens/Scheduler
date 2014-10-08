@@ -6,7 +6,7 @@ var imports = {
 		ApiHandler: new imports.ApiHandler()
 	};
 
-describe("RequestHandler.", function () {
+describe("ApiHandler.", function () {
 	describe("handle", function () {
 
 	});

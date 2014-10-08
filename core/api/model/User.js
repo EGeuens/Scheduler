@@ -62,6 +62,7 @@ var User = function (conf) {
 // Public methods
 ///
 User.prototype.find = function () {
+	//TODO think this through further
 	var me = this;
 	me.setId(123);
 	me.setName("tester");

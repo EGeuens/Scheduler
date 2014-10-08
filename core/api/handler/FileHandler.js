@@ -1,6 +1,6 @@
 "use strict";
 /**
- * TODO - finish him!
+ * File handling express middleware
  * @class {core.api.handler.FileHandler}
  * @author Erwin
  * @date 12/09/2014
@@ -31,7 +31,6 @@ var FileHandler = function (rootPath, basePath) {
 		lSendFile = imports.path.resolve(basePath + lUrl);
 
 		imports.fs.exists(lSendFile, function (exists) {
-			console.warn("help", exists);
 			if (!exists) {
 				next(); // let the 404 cathcer do it's thing
 				return;
@@ -41,6 +40,25 @@ var FileHandler = function (rootPath, basePath) {
 			res.sendFile(lSendFile);
 		});
 	};
+};
+
+FileHandler.prototype.notFoundHandler = function (req, res, next) {
+	res.status(404);
+
+	// respond with html page
+	if (req.accepts('html')) {
+		res.sendFile(imports.path.resolve(__dirname + "/../../app/404.html"));
+		return;
+	}
+
+	// respond with json
+	if (req.accepts('json')) {
+		res.send({ error: 'Not found' });
+		return;
+	}
+
+	// default to plain-text. send()
+	res.type('txt').send('Not found');
 };
 
 module.exports = FileHandler;

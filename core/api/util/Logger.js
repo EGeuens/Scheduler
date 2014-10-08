@@ -14,12 +14,13 @@ var imports = {
 		logLevel: undefined,
 
 		logColors: {
-			error: "red",
-			warn : "yellow",
-			info : "blue",
-			debug: "magenta",
-			log  : "black",
-			fun  : "rainbow"
+			error  : "red",
+			warn   : "yellow",
+			info   : "blue",
+			debug  : "magenta",
+			log    : "black",
+			success: "green",
+			fun    : "rainbow"
 		},
 
 		/**
@@ -48,7 +49,11 @@ var imports = {
 				}
 
 				lMsg = lArgs.join(" ");
-				console[type].call(this, lMsg[color]);
+
+				if (lMsg) {
+					lMsg = ["[" + type.toUpperCase() + "]", lMsg].join(" ");
+				}
+				console.log.call(this, lMsg[color]);
 			}
 			catch (e) {
 				console.error(imports.messages.ERROR_WHILE_LOGGING, e.stack);
@@ -109,7 +114,7 @@ Logger.prototype.LOG_LEVEL_TEST = 0; //show everything!
  * @param {Number} [severity] The severity of the logging (LOG_LEVEL_XXX)
  */
 Logger.prototype.init = function (msg, severity) {
-	if(msg){
+	if (msg) {
 		console.log(msg[privates.logColors.log]);
 	}
 	console.log("Initializing logger... Get ready for some fast and furious messaging!!"[privates.logColors.fun], "\nWe're using colors!".rainbow,
@@ -125,7 +130,7 @@ Logger.prototype.init = function (msg, severity) {
  */
 Logger.prototype.debug = function () {
 	var me = this;
-	privates.doLog.call(me, "info", Logger.prototype.LOG_LEVEL_DEBUG, arguments, privates.logColors.debug);
+	privates.doLog.call(me, "debug", Logger.prototype.LOG_LEVEL_DEBUG, arguments, privates.logColors.debug);
 };
 
 /**
@@ -150,6 +155,14 @@ Logger.prototype.info = function () {
 Logger.prototype.log = function () {
 	var me = this;
 	privates.doLog.call(me, "log", me.getLogLevel(), arguments, privates.logColors.log);
+};
+
+/**
+ * Log a success message
+ */
+Logger.prototype.success = function () {
+	var me = this;
+	privates.doLog.call(me, "success", me.getLogLevel(), arguments, privates.logColors.success);
 };
 
 /**

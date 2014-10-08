@@ -7,19 +7,24 @@
  * @date 5/09/2014
  */
 var imports = {
+		_           : require("underscore"),
 		express     : require("express"),
 		http        : require("http"),
 		io          : require("socket.io"),
 		Config      : require("./Config"),
 		Environments: require("./enum/Environments"),
 		Logger      : require("./util/Logger"),
-		FileHandler : require("./handler/FileHandler")
+		FileHandler : require("./handler/FileHandler"),
+		ErrorHandler: require("./handler/ErrorHandler"),
+		Module      : require("./model/Module")
 
 	},
 	privates = {
 		app : null,
 		io  : null,
-		http: null
+		http       : null,
+		partsReady : [],
+		partsNeeded: ["setupSockets", "setupRoutes"]
 	};
 
 /**
@@ -56,15 +61,32 @@ Server.prototype.close = function () {
 };
 
 /**
+ * Complete (or at least try to complete) the server setup
+ * @param part
+ */
+Server.prototype.completeSetup = function (part) {
+	privates.partsReady.push(part);
+
+	if (imports._.intersection(privates.partsReady, privates.partsNeeded).length === privates.partsNeeded.length) {
+		imports.Logger.log(""); //log a newline
+		imports.Logger.success("Server is all set up and ready to go!");
+	}
+};
+
+/**
  * Initialises our server
  */
 Server.prototype.init = function () {
 	var me = this;
 
 	me.initLogger();
+
 	me.prepareServer();
 	me.setupParameters();
-	me.setupListeners();
+
+	var lModules = imports.Module.prototype.find();
+	imports.Logger.log("Server is prepared! But wait, we still have to load these modules:", imports._.pluck(lModules, "name").join(", "));
+	me.setupListeners(lModules);
 };
 
 /**
@@ -83,7 +105,7 @@ Server.prototype.initLogger = function () {
 		lLogLevel = imports.Logger.LOG_LEVEL_NONE;
 	}
 
-	imports.Logger.init("Initializing the Core... Hold on to yo' butts!!", lLogLevel);
+	imports.Logger.init("Initializing the server...", lLogLevel);
 };
 
 /**
@@ -102,27 +124,11 @@ Server.prototype.prepareServer = function () {
 /**
  * Sets up listening for the http server and sockets
  */
-Server.prototype.setupListeners = function () {
+Server.prototype.setupListeners = function (modules) {
 	var me = this;
 
-	imports.Logger.info("Sharpening ears...");
-	var tmpIoConnCB = function (socket) {
-		imports.Logger.info("User connected on socket", socket.id);
-	};
-	me.getIo().on("connection", tmpIoConnCB);
-
-	var tmpHttpListenCB = function () {
-		imports.Logger.log(""); // print newline
-		imports.Logger.info("Ears sharpened!");
-		imports.Logger.log("Server listening on port", me.getApp().get("port"));
-
-		//for core module send files from /core/app
-		privates.app.use("/", imports.FileHandler("/", __dirname + "/../app"));
-
-		imports.Logger.info("Core initialized! It's something :)");
-
-	};
-	me.getHttp().listen(me.getApp().get("port"), tmpHttpListenCB);
+	me.setupSockets(modules);
+	me.setupRoutes(modules);
 };
 
 /**
@@ -132,6 +138,82 @@ Server.prototype.setupParameters = function () {
 	var me = this;
 	imports.Logger.info("Setting parameters...");
 	me.getApp().set("port", imports.Config.port);
+};
+
+/**
+ * Setup REST API routes
+ * @param modules
+ */
+Server.prototype.setupRoutes = function (modules) {
+	var me = this;
+
+	me.getHttp().listen(me.getApp().get("port"), function () {
+		var lModuleNames = imports._.pluck(modules, "name").join(", "),
+			lAppBasePath = __dirname + "/../..",
+			lModule, lModuleRouter, lRouter, i,
+			lModulesFailed = 0;
+
+		imports.Logger.log(""); // print newline
+		imports.Logger.log("Server listening on port", me.getApp().get("port"));
+
+		imports.Logger.log("Setting up API routes for:", lModuleNames);
+		//TODO setup API routes for modules
+		for (i = 0; i < modules.length; i++) {
+			lModule = modules[i];
+			try {
+				lModuleRouter = require(lAppBasePath + lModule.rootPath + "/api/Router");
+				lRouter = imports.express.Router({
+					//These are the default parameters, but for clarity written out.
+					caseSensitive: false,
+					strict       : false,
+					mergeParams  : false
+				});
+				lModuleRouter.setup(lRouter);
+				privates.app.use(lModule.apiPath || lModule.rootPath, lRouter);
+				imports.Logger.info("Setting up API routes for:", lModule.name, "was a complete success!");
+			}
+			catch (e) {
+				lModulesFailed++;
+				imports.Logger.error("Setting up API routes for:", lModule.name, "was a complete failure!\n", e.message, "\n", e.stack);
+			}
+		}
+		if (lModulesFailed) {
+			imports.Logger.error("We failed at loading", lModulesFailed, "module(s). Look above for more info.");
+		}
+		else {
+			imports.Logger.info(modules.length, "module(s) were set up successfully!");
+		}
+
+		imports.Logger.log("Setting up static paths for:", lModuleNames);
+		//for core module send files from /core/app
+		for (i = 0; i < modules.length; i++) {
+			lModule = modules[i];
+			privates.app.use("/", imports.FileHandler(lModule.apiPath || lModule.rootPath, lAppBasePath + lModule.rootPath + lModule.publicDir));
+		}
+
+		imports.Logger.log("Setting error 404/500 handlers");
+		privates.app.use(imports.FileHandler.prototype.notFoundHandler);
+		privates.app.use(imports.ErrorHandler.catchEverything);
+
+		me.completeSetup("setupRoutes");
+	});
+};
+
+/**
+ * Setup WebSocket routes
+ * @param modules
+ */
+Server.prototype.setupSockets = function (modules) {
+	var me = this;
+
+	me.getIo().on("connection", function (socket) {
+		imports.Logger.info("User connected on socket", socket.id);
+	});
+
+	imports.Logger.log("Setting up WebSocket events for:", imports._.pluck(modules, "name").join(", "));
+	//TODO set up WebSocket events for modules
+
+	me.completeSetup("setupSockets");
 };
 
 ////

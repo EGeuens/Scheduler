@@ -22,6 +22,13 @@ var imports = {
 			fun  : "rainbow"
 		},
 
+		/**
+		 * Do the logging
+		 * @param type
+		 * @param lvl
+		 * @param originalArgs
+		 * @param color
+		 */
 		doLog: function (type, lvl, originalArgs, color) {
 			var me = this;
 

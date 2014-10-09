@@ -13,6 +13,10 @@ var Router = function () {
 	return this;
 };
 
+/**
+ * Setup the routes needed for the core
+ * @param router
+ */
 Router.prototype.setup = function (router) {
 	router.get("/bla", function (req, res) {
 		res.send(200, { message: "hi" });

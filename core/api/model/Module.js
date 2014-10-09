@@ -7,7 +7,8 @@
  */
 
 var imports = {
-		_: require("underscore")
+		_           : require("underscore"),
+		ModelFactory: require("../factory/ModelFactory")
 	},
 	privates = {
 		model: {
@@ -22,41 +23,11 @@ var imports = {
 /**
  * @constructor
  */
-var Module = function (conf) {
-	var me = this,
-		lKey;
-
-	//Set defaults
-	for (lKey in privates.model) {
-		if (privates.model.hasOwnProperty(lKey)) {
-			me[lKey] = privates.model[lKey].default;
-		}
-	}
-
-	//Apply config
-	for (lKey in conf) {
-		if (conf.hasOwnProperty(lKey)) {
-			if (!privates.model.hasOwnProperty(lKey)) {
-				imports.Logger.warn(imports.Messages.TRYING_TO_SET_INVALID_PROPERTY, lKey);
-				continue;
-			}
-
-			var lCapitalizedKey = lKey.charAt(0).toUpperCase() + lKey.substr(1),
-				lSetter = ["set", lCapitalizedKey].join("");
-
-			if (!me[lSetter]) {
-				throw imports.ErrorFactory.create(imports.Messages.NO_SETTER_FOUND_FOR, lKey);
-			}
-
-			me[lSetter](conf[lKey]);
-		}
-	}
-
-	return this;
-};
+var Module = imports.ModelFactory.create(privates.model);
 
 /**
  * Find all modules by a query, an empty query will return all modules
+ * TODO dynamically load modules (MongoDB)
  * @param [query]
  * @returns {Array}
  */

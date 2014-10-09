@@ -20,8 +20,8 @@ var imports = {
 
 	},
 	privates = {
-		app : null,
-		io  : null,
+		app        : null,
+		io         : null,
 		http       : null,
 		partsReady : [],
 		partsNeeded: ["setupSockets", "setupRoutes"]
@@ -157,7 +157,6 @@ Server.prototype.setupRoutes = function (modules) {
 		imports.Logger.log("Server listening on port", me.getApp().get("port"));
 
 		imports.Logger.log("Setting up API routes for:", lModuleNames);
-		//TODO setup API routes for modules
 		for (i = 0; i < modules.length; i++) {
 			lModule = modules[i];
 			try {

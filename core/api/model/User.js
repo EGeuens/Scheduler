@@ -7,10 +7,7 @@
  */
 
 var imports = {
-		Logger      : require("../util/Logger"),
-		Messages    : require("../enum/Messages"),
-		ErrorFactory: require("../factory/ErrorFactory"),
-		Validator   : require("../util/Validator")
+		ModelFactory: require("../factory/ModelFactory")
 	},
 	privates = {
 		model: {
@@ -25,38 +22,7 @@ var imports = {
 /**
  * @constructor
  */
-var User = function (conf) {
-	var me = this,
-		lKey;
-
-	//Set defaults
-	for (lKey in privates.model) {
-		if (privates.model.hasOwnProperty(lKey)) {
-			me[lKey] = privates.model[lKey].default;
-		}
-	}
-
-	//Apply config
-	for (lKey in conf) {
-		if (conf.hasOwnProperty(lKey)) {
-			if (!privates.model.hasOwnProperty(lKey)) {
-				imports.Logger.warn(imports.Messages.TRYING_TO_SET_INVALID_PROPERTY, lKey);
-				continue;
-			}
-
-			var lCapitalizedKey = lKey.charAt(0).toUpperCase() + lKey.substr(1),
-				lSetter = ["set", lCapitalizedKey].join("");
-
-			if (!me[lSetter]) {
-				throw imports.ErrorFactory.create(imports.Messages.NO_SETTER_FOUND_FOR, lKey);
-			}
-
-			me[lSetter](conf[lKey]);
-		}
-	}
-
-	return this;
-};
+var User = imports.ModelFactory.create(privates.model);
 
 ////
 // Public methods
@@ -70,12 +36,6 @@ User.prototype.find = function () {
 	me.setUsername("tester123");
 	me.setEmail("tester@test.com");
 	return me;
-};
-
-User.prototype.validate = function () {
-	var me = this;
-
-	return imports.Validator.validateModel(me, privates.model);
 };
 
 ////

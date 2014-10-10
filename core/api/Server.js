@@ -38,29 +38,6 @@ var Server = function () {
 // Public methods
 ////
 /**
- * Closes the listening http server and sockets
- */
-Server.prototype.close = function () {
-	var me = this;
-	if (me.getHttp()) {
-		try {
-			me.getHttp().close();
-		}
-		catch (e) {
-			imports.Logger.warn("http server already closed");
-		}
-	}
-	if (me.getIo()) {
-		try {
-			me.getIo().close();
-		}
-		catch (e) {
-			imports.Logger.warn("socket server already closed");
-		}
-	}
-};
-
-/**
  * Complete (or at least try to complete) the server setup
  * @param part
  */
@@ -84,9 +61,17 @@ Server.prototype.init = function () {
 	me.prepareServer();
 	me.setupParameters();
 
-	var lModules = imports.Module.prototype.find();
-	imports.Logger.log("Server is prepared! But wait, we still have to load these modules:", imports._.pluck(lModules, "name").join(", "));
-	me.setupListeners(lModules);
+	imports.Module.prototype.find(function (err, modules) {
+		if (!err) {
+			if (modules.length) {
+				imports.Logger.log("Server is prepared! But wait, we still have to load these modules:", imports._.pluck(modules, "name").join(", "));
+			}
+			else {
+				imports.Logger.log("No modules were found, oh well, I guess we'll do without (somehow)...");
+			}
+			me.setupListeners(modules);
+		}
+	});
 };
 
 /**
@@ -145,9 +130,10 @@ Server.prototype.setupParameters = function () {
  * @param modules
  */
 Server.prototype.setupRoutes = function (modules) {
-	var me = this;
+	var me = this,
+		lServer;
 
-	me.getHttp().listen(me.getApp().get("port"), function () {
+	lServer = me.getHttp().listen(me.getApp().get("port"), function () {
 		var lModuleNames = imports._.pluck(modules, "name").join(", "),
 			lAppBasePath = __dirname + "/../..",
 			lModule, lModuleRouter, lRouter, i,
@@ -156,7 +142,12 @@ Server.prototype.setupRoutes = function (modules) {
 		imports.Logger.log(""); // print newline
 		imports.Logger.log("Server listening on port", me.getApp().get("port"));
 
-		imports.Logger.log("Setting up API routes for:", lModuleNames);
+		if (lModuleNames) {
+			imports.Logger.log("Setting up API routes for:", lModuleNames);
+		}
+		else {
+			imports.Logger.log("No routes to set up");
+		}
 		for (i = 0; i < modules.length; i++) {
 			lModule = modules[i];
 			try {
@@ -183,11 +174,16 @@ Server.prototype.setupRoutes = function (modules) {
 			imports.Logger.info(modules.length, "module(s) were set up successfully!");
 		}
 
-		imports.Logger.log("Setting up static paths for:", lModuleNames);
+		if (lModuleNames) {
+			imports.Logger.log("Setting up static paths for:", lModuleNames);
+		}
+		else {
+			imports.Logger.log("No static paths to set up");
+		}
 		//for core module send files from /core/app
 		for (i = 0; i < modules.length; i++) {
 			lModule = modules[i];
-			privates.app.use("/", imports.FileHandler(lModule.apiPath || lModule.rootPath, lAppBasePath + lModule.rootPath + lModule.publicDir));
+			privates.app.use(lModule.apiPath || lModule.rootPath, imports.FileHandler(lModule.apiPath || lModule.rootPath, lAppBasePath + lModule.rootPath + lModule.publicDir));
 		}
 
 		imports.Logger.log("Setting error 404/500 handlers");
@@ -196,6 +192,8 @@ Server.prototype.setupRoutes = function (modules) {
 
 		me.completeSetup("setupRoutes");
 	});
+
+	me.setServer(lServer);
 };
 
 /**
@@ -261,6 +259,14 @@ Server.prototype.setIo = function (io) {
  */
 Server.prototype.getIo = function () {
 	return privates.io;
+};
+
+Server.prototype.getServer = function () {
+	return privates.server;
+};
+
+Server.prototype.setServer = function (server) {
+	return privates.server = server;
 };
 
 //module.exports = new Server(); means this is a static (!) class

@@ -43,6 +43,7 @@ var FileHandler = function (rootPath, basePath) {
 };
 
 FileHandler.prototype.notFoundHandler = function (req, res, next) {
+	imports.Logger.log("404! Requested URL:", req.originalUrl);
 	res.status(404);
 
 	// respond with html page

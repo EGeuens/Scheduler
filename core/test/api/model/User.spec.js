@@ -198,4 +198,19 @@ describe("User model", function () {
 			expect(lResult).toBe(false);
 		});
 	});
+
+	describe("method toModel", function () {
+		it("should return the model", function () {
+			var lConf = {
+					id       : 123,
+					name     : "tester",
+					firstName: "tester",
+					username : "tester123",
+					email    : "tester@test.com"
+				},
+				lUser = new imports.User(lConf);
+
+			expect(lUser.toModel()).toEqual(lConf);
+		});
+	});
 });

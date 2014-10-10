@@ -6,7 +6,9 @@ var imports = {
 	Server      : require("../../api/Server"),
 	express     : require("express"),
 	http        : require("http"),
-	io          : require("socket.io")
+	io          : require("socket.io"),
+	Module      : require("../../api/model/Module"),
+	Q           : require("q")
 };
 
 describe("Server", function () {
@@ -33,7 +35,6 @@ describe("Server", function () {
 	});
 
 	afterEach(function () {
-		imports.Server.close();
 	});
 
 	describe("init", function () {
@@ -46,11 +47,30 @@ describe("Server", function () {
 		});
 
 		it("should initialise the server", function () {
+			spyOn(imports.Module.prototype, "find").andCallFake(function (cb) {
+				cb(null, lModules);
+			});
+
 			imports.Server.init();
 
 			expect(imports.Server.initLogger).toHaveBeenCalled();
 			expect(imports.Server.prepareServer).toHaveBeenCalled();
 			expect(imports.Server.setupParameters).toHaveBeenCalled();
+			expect(imports.Module.prototype.find).toHaveBeenCalled();
+			expect(imports.Server.setupListeners).toHaveBeenCalled();
+		});
+
+		it("should close the server when no modules are found", function () {
+			spyOn(imports.Module.prototype, "find").andCallFake(function (cb) {
+				cb(null, []);
+			});
+
+			imports.Server.init();
+
+			expect(imports.Server.initLogger).toHaveBeenCalled();
+			expect(imports.Server.prepareServer).toHaveBeenCalled();
+			expect(imports.Server.setupParameters).toHaveBeenCalled();
+			expect(imports.Module.prototype.find).toHaveBeenCalled();
 			expect(imports.Server.setupListeners).toHaveBeenCalled();
 		});
 	});
@@ -128,24 +148,6 @@ describe("Server", function () {
 
 			expect(imports.Server.setupRoutes).toHaveBeenCalledWith(lModules);
 			expect(imports.Server.setupSockets).toHaveBeenCalledWith(lModules);
-		});
-	});
-
-	describe("close", function () {
-		beforeEach(function () {
-			imports.Server.setApp(imports.express());
-			imports.Server.setHttp(imports.http.Server(imports.Server.getApp()));
-			imports.Server.setIo(imports.io(imports.Server.getHttp()));
-
-			spyOn(imports.Server.getHttp(), "close");
-			spyOn(imports.Server.getIo(), "close");
-		});
-
-		it("close the connection", function () {
-			imports.Server.close();
-
-			expect(imports.Server.getHttp().close).toHaveBeenCalled();
-			expect(imports.Server.getIo().close).toHaveBeenCalled();
 		});
 	});
 

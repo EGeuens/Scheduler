@@ -11,7 +11,7 @@ var imports = {
 		Validator: require("../util/Validator")
 	},
 	privates = {
-		mixables: ["validate"]
+		mixables: ["validate", "toModel"]
 	};
 
 /**
@@ -40,7 +40,20 @@ ModelMixin.prototype.mixin = function (clazz) {
 ModelMixin.prototype.validate = function () {
 	var me = this;
 
-	return imports.Validator.validateModel(me, privates.model);
+	return imports.Validator.validateModel(me, me.getModelDefinition());
+};
+
+ModelMixin.prototype.toModel = function () {
+	var me = this,
+		lKey, lReturn = {};
+
+	for (lKey in me.getModelDefinition()) {
+		if (me.hasOwnProperty(lKey)) {
+			lReturn[lKey] = me[lKey];
+		}
+	}
+
+	return lReturn;
 };
 
 module.exports = new ModelMixin();

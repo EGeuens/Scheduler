@@ -1,14 +1,16 @@
 {
-  "name": "Scheduler",
-  "version": "0.0.1",
-  "dependencies": {
-    "colors": "^0.6.2",
-    "express": "^4.8.8",
-    "socket.io": "^1.1.0",
-    "underscore": "^1.7.0"
-  },
-  "devDependencies": {
-    "jasmine-node": "^1.14.5",
-    "proxyquire": "^1.0.1"
-  }
+	"name"           : "Scheduler",
+	"version"        : "0.0.1",
+	"dependencies"   : {
+		"colors"    : "^0.6.2",
+		"express"   : "^4.8.8",
+		"mongodb"   : "^1.4.19",
+		"q"         : "^1.0.1",
+		"socket.io" : "^1.1.0",
+		"underscore": "^1.7.0"
+	},
+	"devDependencies": {
+		"jasmine-node": "^1.14.5",
+		"proxyquire"  : "^1.0.1"
+	}
 }

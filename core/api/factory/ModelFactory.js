@@ -45,8 +45,11 @@ ModelFactory.prototype.create = function (model) {
 					continue;
 				}
 
-				var lCapitalizedKey = lKey.charAt(0).toUpperCase() + lKey.substr(1),
-					lSetter = ["set", lCapitalizedKey].join("");
+				var lCapitalizedKey = lKey.replace(/_/g, ""),
+					lSetter;
+
+				lCapitalizedKey = lCapitalizedKey.charAt(0).toUpperCase() + lCapitalizedKey.substr(1);
+				lSetter = ["set", lCapitalizedKey].join("");
 
 				if (!me[lSetter]) {
 					throw imports.ErrorFactory.create(imports.Messages.NO_SETTER_FOUND_FOR, lKey);

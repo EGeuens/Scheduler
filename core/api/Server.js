@@ -16,7 +16,11 @@ var imports = {
 		Logger      : require("./util/Logger"),
 		FileHandler : require("./handler/FileHandler"),
 		ErrorHandler: require("./handler/ErrorHandler"),
-		Module      : require("./model/Module")
+		Module      : require("./model/Module"),
+		MongoStore  : require("connect-mongo"),
+		CookieParser: require("cookie-parser"),
+		Session     : require("express-session"),
+		BodyParser  : require("body-parser")
 
 	},
 	privates = {
@@ -24,7 +28,10 @@ var imports = {
 		io         : null,
 		http       : null,
 		partsReady : [],
-		partsNeeded: ["setupSockets", "setupRoutes"]
+		partsNeeded: ["setupSockets", "setupRoutes"],
+
+		superSecret: "My_Super+5ecr3T",
+		MongoStore : imports.MongoStore(imports.Session)
 	};
 
 /**
@@ -59,18 +66,21 @@ Server.prototype.init = function () {
 	me.initLogger();
 
 	me.prepareServer();
-	me.setupParameters();
 
-	imports.Module.prototype.find(function (err, modules) {
-		if (!err) {
-			if (modules.length) {
-				imports.Logger.log("Server is prepared! But wait, we still have to load these modules:", imports._.pluck(modules, "name").join(", "));
-			}
-			else {
-				imports.Logger.log("No modules were found, oh well, I guess we'll do without (somehow)...");
-			}
-			me.setupListeners(modules);
+	imports.Logger.log("Server is prepared! But wait, we still have to load the modules.");
+	imports.Module.prototype.find({}, function (err, modules) {
+		if (err) {
+			imports.Logger.log("Something went wrong while loading the modules:", err);
+			return;
 		}
+
+		if (modules.length) {
+			imports.Logger.log("Going to configure these modules:", imports._.pluck(modules, "name").join(", "));
+		}
+		else {
+			imports.Logger.log("No modules were found, oh well, I guess we'll do without (somehow)...");
+		}
+		me.setupListeners(modules);
 	});
 };
 
@@ -104,6 +114,24 @@ Server.prototype.prepareServer = function () {
 	me.setHttp(imports.http.Server(me.getApp()));
 	me.setIo(imports.io(me.getHttp()));
 
+	me.getApp().set("port", imports.Config.port);
+
+	me.getApp().use(imports.BodyParser.json());
+	me.getApp().use(imports.BodyParser.urlencoded({
+		extended: true
+	}));
+
+	me.getApp().use(imports.CookieParser(privates.superSecret));
+	me.getApp().use(imports.Session({
+		secret           : privates.superSecret,
+		resave           : true,
+		saveUninitialized: true,
+		store            : new privates.MongoStore({
+			db  : imports.Config.mongodb.db,
+			host: imports.Config.mongodb.server.host,
+			port: imports.Config.mongodb.server.port
+		})
+	}));
 };
 
 /**
@@ -117,15 +145,6 @@ Server.prototype.setupListeners = function (modules) {
 };
 
 /**
- * Set application parameters
- */
-Server.prototype.setupParameters = function () {
-	var me = this;
-	imports.Logger.info("Setting parameters...");
-	me.getApp().set("port", imports.Config.port);
-};
-
-/**
  * Setup REST API routes
  * @param modules
  */
@@ -133,6 +152,7 @@ Server.prototype.setupRoutes = function (modules) {
 	var me = this,
 		lServer;
 
+	imports.Logger.log("Server going to listen on port", me.getApp().get("port"));
 	lServer = me.getHttp().listen(me.getApp().get("port"), function () {
 		var lModuleNames = imports._.pluck(modules, "name").join(", "),
 			lAppBasePath = __dirname + "/../..",
@@ -183,7 +203,7 @@ Server.prototype.setupRoutes = function (modules) {
 		//for core module send files from /core/app
 		for (i = 0; i < modules.length; i++) {
 			lModule = modules[i];
-			privates.app.use(lModule.apiPath || lModule.rootPath, imports.FileHandler(lModule.apiPath || lModule.rootPath, lAppBasePath + lModule.rootPath + lModule.publicDir));
+			privates.app.use(lModule.publicPath || lModule.rootPath, imports.FileHandler(lModule.publicPath || lModule.rootPath, lAppBasePath + lModule.rootPath + lModule.publicDir));
 		}
 
 		imports.Logger.log("Setting error 404/500 handlers");

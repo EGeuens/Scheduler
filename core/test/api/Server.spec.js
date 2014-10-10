@@ -42,12 +42,11 @@ describe("Server", function () {
 			spyOn(imports.Logger, "log"); // prevent log from showing up in tests
 			spyOn(imports.Server, "initLogger");
 			spyOn(imports.Server, "prepareServer");
-			spyOn(imports.Server, "setupParameters");
 			spyOn(imports.Server, "setupListeners");
 		});
 
 		it("should initialise the server", function () {
-			spyOn(imports.Module.prototype, "find").andCallFake(function (cb) {
+			spyOn(imports.Module.prototype, "find").andCallFake(function (query, cb) {
 				cb(null, lModules);
 			});
 
@@ -55,13 +54,12 @@ describe("Server", function () {
 
 			expect(imports.Server.initLogger).toHaveBeenCalled();
 			expect(imports.Server.prepareServer).toHaveBeenCalled();
-			expect(imports.Server.setupParameters).toHaveBeenCalled();
 			expect(imports.Module.prototype.find).toHaveBeenCalled();
 			expect(imports.Server.setupListeners).toHaveBeenCalled();
 		});
 
 		it("should close the server when no modules are found", function () {
-			spyOn(imports.Module.prototype, "find").andCallFake(function (cb) {
+			spyOn(imports.Module.prototype, "find").andCallFake(function (query, cb) {
 				cb(null, []);
 			});
 
@@ -69,7 +67,6 @@ describe("Server", function () {
 
 			expect(imports.Server.initLogger).toHaveBeenCalled();
 			expect(imports.Server.prepareServer).toHaveBeenCalled();
-			expect(imports.Server.setupParameters).toHaveBeenCalled();
 			expect(imports.Module.prototype.find).toHaveBeenCalled();
 			expect(imports.Server.setupListeners).toHaveBeenCalled();
 		});
@@ -101,19 +98,6 @@ describe("Server", function () {
 			expect(imports.Server.setApp).toHaveBeenCalled();
 			expect(imports.Server.setHttp).toHaveBeenCalled();
 			expect(imports.Server.setIo).toHaveBeenCalled();
-		});
-	});
-
-	describe("setupParameters", function () {
-		beforeEach(function () {
-			imports.Server.setApp(imports.express());
-		});
-
-		it("should prepare the server (setup app, http and io privates)", function () {
-			imports.Server.setupParameters();
-
-			expect(imports.Server.getApp().get("port")).toBe(imports.Config.port);
-			expect(imports.Server.getApp().get("port")).toBe(imports.Config.testPort); //nope, not paranoid xD
 		});
 	});
 
@@ -198,8 +182,6 @@ describe("Server", function () {
 	});
 
 	describe("completeSetup", function () {
-		var lSocket = {};
-
 		beforeEach(function () {
 			spyOn(imports.Logger, "log"); // prevent log from showing up in tests
 			spyOn(imports.Logger, "success");

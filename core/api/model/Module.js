@@ -16,12 +16,13 @@ var imports = {
 		dbType    : imports.DatabaseAdapter.MONGODB,
 		collection: "modules",
 		model     : {
-			_id    : { type: Number, default: null, validate: ["number"] },
-			name     : { type: String, default: "", validate: ["required", "alphabetic"] },
-			version: { type: String, default: "", validate: ["alphanumeric"] },
-			rootPath : { type: String, default: "", validate: ["required", "alphanumeric"] },
-			apiPath  : { type: String, default: "", validate: ["alphanumeric"] },
-			publicDir: { type: String, default: "/app", validate: ["alphanumeric"] }
+			_id       : { type: Number, default: null, validate: ["number"] },
+			name      : { type: String, default: "", validate: ["required", "alphabetic"] },
+			version   : { type: String, default: "", validate: ["alphanumeric"] },
+			rootPath  : { type: String, default: "", validate: ["required", "alphanumeric"] },
+			apiPath   : { type: String, default: "", validate: ["alphanumeric"] },
+			publicPath: { type: String, default: "", validate: ["alphanumeric"] },
+			publicDir : { type: String, default: "/app", validate: ["alphanumeric"] }
 		}
 	};
 
@@ -35,7 +36,6 @@ var Module = imports.ModelFactory.create(privates.model);
 ////
 /**
  * Find all modules by a query, an empty query will return all modules
- * TODO dynamically load modules (MongoDB)
  * @param query
  * @param cb
  * @returns {Array}
@@ -131,6 +131,14 @@ Module.prototype.getApiPath = function () {
 
 Module.prototype.setApiPath = function (apiPath) {
 	return this.apiPath = apiPath;
+};
+
+Module.prototype.getPublicPath = function () {
+	return this.publicPath;
+};
+
+Module.prototype.setPublicPath = function (publicPath) {
+	return this.publicPath = publicPath;
 };
 
 Module.prototype.getPublicDir = function () {

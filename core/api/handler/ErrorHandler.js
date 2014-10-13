@@ -10,8 +10,6 @@ var imports = {
 		fs    : require("fs"),
 		path  : require("path"),
 		Logger: require("../util/Logger")
-	},
-	privates = {
 	};
 
 /**
@@ -25,19 +23,19 @@ ErrorHandler.prototype.catchEverything = function (err, req, res, next) {
 	res.status(500);
 
 	// respond with html page
-	if (req.accepts('html')) {
+	if (req.accepts("html")) {
 		res.sendFile(imports.path.resolve(__dirname + "/../../app/500.html"));
 		return;
 	}
 
 	// respond with json
-	if (req.accepts('json')) {
-		res.send({ error: 'Something broke, badly...' });
+	if (req.accepts("json")) {
+		res.send({ error: "Something broke, badly..." });
 		return;
 	}
 
 	// default to plain-text. send()
-	res.type('txt').send('Something broke, badly...');
+	res.type("txt").send("Something broke, badly...");
 };
 
 module.exports = new ErrorHandler();

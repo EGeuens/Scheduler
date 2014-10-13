@@ -241,7 +241,7 @@ Server.prototype.setupSockets = function (modules) {
  * @returns {express} app
  */
 Server.prototype.setApp = function (app) {
-	return privates.app = app;
+	privates.app = app;
 };
 
 /**
@@ -256,7 +256,7 @@ Server.prototype.getApp = function () {
  * @returns {http} http
  */
 Server.prototype.setHttp = function (http) {
-	return privates.http = http;
+	privates.http = http;
 };
 
 /**
@@ -271,7 +271,7 @@ Server.prototype.getHttp = function () {
  * @returns {socket.io} io
  */
 Server.prototype.setIo = function (io) {
-	return privates.io = io;
+	privates.io = io;
 };
 
 /**
@@ -281,12 +281,8 @@ Server.prototype.getIo = function () {
 	return privates.io;
 };
 
-Server.prototype.getServer = function () {
-	return privates.server;
-};
-
 Server.prototype.setServer = function (server) {
-	return privates.server = server;
+	privates.server = server;
 };
 
 //module.exports = new Server(); means this is a static (!) class

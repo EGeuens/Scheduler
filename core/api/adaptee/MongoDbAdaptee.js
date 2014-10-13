@@ -7,12 +7,11 @@
  */
 
 var imports = {
-		ErrorFactory: require("../factory/ErrorFactory"),
-		Config      : require("../Config"),
-		Q           : require("q"),
-		mongodb     : require("mongodb")
-	},
-	privates = {};
+	ErrorFactory: require("../factory/ErrorFactory"),
+	Config      : require("../Config"),
+	Q           : require("q"),
+	mongodb     : require("mongodb")
+};
 
 /**
  * @constructor

@@ -91,7 +91,7 @@ Validator.prototype.validateProperty = function (propVal, prop) {
 				lSuccess = false;
 			}
 			else if (!prop[lValidation].test(propVal)) {
-				lSuccess = false
+				lSuccess = false;
 			}
 		}
 	}

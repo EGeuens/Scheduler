@@ -98,7 +98,7 @@ Module.prototype.getId = function () {
 };
 
 Module.prototype.setId = function (id) {
-	return this._id = id;
+	this._id = id;
 };
 
 Module.prototype.getVersion = function () {
@@ -106,7 +106,7 @@ Module.prototype.getVersion = function () {
 };
 
 Module.prototype.setVersion = function (version) {
-	return this.version = version;
+	this.version = version;
 };
 
 Module.prototype.getName = function () {
@@ -114,7 +114,7 @@ Module.prototype.getName = function () {
 };
 
 Module.prototype.setName = function (name) {
-	return this.name = name;
+	this.name = name;
 };
 
 Module.prototype.getRootPath = function () {
@@ -122,7 +122,7 @@ Module.prototype.getRootPath = function () {
 };
 
 Module.prototype.setRootPath = function (rootPath) {
-	return this.rootPath = rootPath;
+	this.rootPath = rootPath;
 };
 
 Module.prototype.getApiPath = function () {
@@ -130,7 +130,7 @@ Module.prototype.getApiPath = function () {
 };
 
 Module.prototype.setApiPath = function (apiPath) {
-	return this.apiPath = apiPath;
+	this.apiPath = apiPath;
 };
 
 Module.prototype.getPublicPath = function () {
@@ -138,7 +138,7 @@ Module.prototype.getPublicPath = function () {
 };
 
 Module.prototype.setPublicPath = function (publicPath) {
-	return this.publicPath = publicPath;
+	this.publicPath = publicPath;
 };
 
 Module.prototype.getPublicDir = function () {
@@ -146,7 +146,7 @@ Module.prototype.getPublicDir = function () {
 };
 
 Module.prototype.setPublicDir = function (publicDir) {
-	return this.publicDir = publicDir;
+	this.publicDir = publicDir;
 };
 
 module.exports = Module;

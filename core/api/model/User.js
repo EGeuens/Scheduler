@@ -50,7 +50,7 @@ User.prototype.getId = function () {
 };
 
 User.prototype.setId = function (id) {
-	return this.id = id;
+	this.id = id;
 };
 
 User.prototype.getName = function () {
@@ -58,7 +58,7 @@ User.prototype.getName = function () {
 };
 
 User.prototype.setName = function (name) {
-	return this.name = name;
+	this.name = name;
 };
 
 User.prototype.getUsername = function () {
@@ -66,7 +66,7 @@ User.prototype.getUsername = function () {
 };
 
 User.prototype.setUsername = function (username) {
-	return this.username = username;
+	this.username = username;
 };
 
 User.prototype.getEmail = function () {
@@ -74,7 +74,7 @@ User.prototype.getEmail = function () {
 };
 
 User.prototype.setEmail = function (email) {
-	return this.email = email;
+	this.email = email;
 };
 
 User.prototype.getFirstName = function () {
@@ -82,7 +82,7 @@ User.prototype.getFirstName = function () {
 };
 
 User.prototype.setFirstName = function (firstName) {
-	return this.firstName = firstName;
+	this.firstName = firstName;
 };
 
 module.exports = User;

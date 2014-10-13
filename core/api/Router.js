@@ -28,7 +28,7 @@ Router.prototype.setup = function (router) {
 				return;
 			}
 			res.status(200).send(modules);
-		})
+		});
 	});
 	router.get("/bla", function (req, res) {
 		res.status(200).send({ message: "hi" });

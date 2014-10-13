@@ -41,15 +41,17 @@ var imports = {
 
 			var lModuleConfigFile = __dirname + "\\" + lModule + "\\" + lModule + ".json";
 
-			imports.fs.readFile(lModuleConfigFile, { encoding: "utf8" }, privates.findPreInstalledModules);
+			imports.fs.readFile(lModuleConfigFile, { encoding: "utf8" }, function (err, data) {
+				if (err) {
+					throw imports.ErrorFactory.create("Module configuration file not found, it should be:", lModuleConfigFile)
+				}
+
+				privates.findPreInstalledModules(data)
+			});
 
 		},
 
-		findPreInstalledModules: function (err, data) {
-			if (err) {
-				throw imports.ErrorFactory.create("Module configuration file not found, it should be:", lModuleConfigFile)
-			}
-
+		findPreInstalledModules: function (data) {
 			var lConfig = JSON.parse(data);
 			privates.module = new imports.Module(lConfig);
 
@@ -57,17 +59,19 @@ var imports = {
 				selector: {
 					name: privates.module.getName()
 				}
-			}, privates.prepareInstall);
+			}, function (err, modules) {
+				if (err) {
+					throw imports.ErrorFactory.create("An error occurred while trying to search for existing modules", err);
+				}
+				if (modules.length > 1) {
+					throw imports.ErrorFactory.create("Found", modules.length, "modules with the same name, what's going on here? :0");
+				}
+
+				privates.prepareInstall(modules);
+			});
 		},
 
-		prepareInstall: function (err, modules) {
-			if (err) {
-				throw imports.ErrorFactory.create("An error occurred while trying to search for existing modules", err);
-			}
-			if (modules.length > 1) {
-				throw imports.ErrorFactory.create("Found", modules.length, "modules with the same name, what's going on here? :0");
-			}
-
+		prepareInstall: function (modules) {
 			//prepare installation
 			if (modules.length === 1) {
 				//make sure _id is set!

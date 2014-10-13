@@ -8,7 +8,7 @@
 var imports = {
 		colors         : require("colors"),
 		HelperFunctions: require("./HelperFunctions"),
-		messages: require("../enum/messages")
+		Messages: require("../enum/Messages")
 	},
 	privates = {
 		logLevel: undefined,

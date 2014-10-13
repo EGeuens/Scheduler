@@ -56,7 +56,7 @@ var imports = {
 				console.log.call(this, lMsg[color]);
 			}
 			catch (e) {
-				console.error(imports.messages.ERROR_WHILE_LOGGING, e.stack);
+				console.error(imports.Messages.ERROR_WHILE_LOGGING, e.stack);
 			}
 		}
 	};
@@ -183,13 +183,13 @@ Logger.prototype.warn = function () {
 Logger.prototype.setLogLevel = function (severity) {
 	var me = this;
 	if (severity !== me.LOG_LEVEL_INFO && severity !== me.LOG_LEVEL_DEBUG && severity !== me.LOG_LEVEL_ERROR && severity !== me.LOG_LEVEL_NONE && severity !== me.LOG_LEVEL_TEST) {
-		me.error(imports.messages.ERROR_UNKNOWN_SEVERITY_LEVEL, ":", severity);
+		me.error(imports.Messages.ERROR_UNKNOWN_SEVERITY_LEVEL, ":", severity);
 		severity = me.LOG_LEVEL_NONE;
 	}
 
 	privates.logLevel = severity;
 	if (severity !== me.LOG_LEVEL_TEST) { // suppress info message for testing
-		me.info(imports.messages.SEVERITY_LEVEL_SET_TO, severity);
+		me.info(imports.Messages.SEVERITY_LEVEL_SET_TO, severity);
 	}
 };
 

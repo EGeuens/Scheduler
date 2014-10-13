@@ -18,6 +18,6 @@
 		"proxyquire"  : "^1.0.1"
 	},
 	"scripts"        : {
-		"test": "jasmine-node ."
+		"test": "jasmine-node . --captureExceptions"
 	}
 }

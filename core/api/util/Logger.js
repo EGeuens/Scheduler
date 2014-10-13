@@ -170,7 +170,7 @@ Logger.prototype.success = function () {
  */
 Logger.prototype.warn = function () {
 	var me = this;
-	privates.doLog.call(me, "log", Logger.prototype.LOG_LEVEL_INFO, arguments, privates.logColors.warn);
+	privates.doLog.call(me, "warning", Logger.prototype.LOG_LEVEL_INFO, arguments, privates.logColors.warn);
 };
 
 ////

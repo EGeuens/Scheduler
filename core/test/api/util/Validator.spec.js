@@ -49,7 +49,7 @@ describe("Validator", function () {
 	describe("validateModel", function () {
 		it("should return true for a valid model", function () {
 			var lUser = new imports.User({
-					id       : 123,
+					_id: 123,
 					name     : "tester",
 					firstName: "tester",
 					username : "tester123",
@@ -57,7 +57,7 @@ describe("Validator", function () {
 				}),
 				lResult,
 				lExpectedUser = new imports.User({
-					id       : 123,
+					_id: 123,
 					name     : "tester",
 					firstName: "tester",
 					username : "tester123",
@@ -84,7 +84,7 @@ describe("Validator", function () {
 
 		it("should return false for an invalid model", function () {
 			var lUser = new imports.User({
-					id       : "aString",
+					_id: "aString",
 					name     : "tester",
 					firstName: "tester",
 					username : "tester123",

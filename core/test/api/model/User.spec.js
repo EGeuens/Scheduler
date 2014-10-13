@@ -16,15 +16,15 @@ describe("User model", function () {
 
 			expect(imports.Logger.warn).not.toHaveBeenCalled();
 
-			expect(lUser.id).toBe(null);
-			expect(lUser.name).toBe("");
-			expect(lUser.username).toBe("");
-			expect(lUser.email).toBe("");
+			expect(lUser.getId()).toBe(null);
+			expect(lUser.getName()).toBe("");
+			expect(lUser.getUsername()).toBe("");
+			expect(lUser.getEmail()).toBe("");
 		});
 
 		it("should set provided values", function () {
 			var lUserConf = {
-					id      : 123,
+					_id     : 123,
 					name    : "Test",
 					username: "Tester123",
 					email   : "tester@test.com"
@@ -33,31 +33,31 @@ describe("User model", function () {
 
 			expect(imports.Logger.warn).not.toHaveBeenCalled();
 
-			expect(lUser.id).toBe(lUserConf.id);
-			expect(lUser.name).toBe(lUserConf.name);
-			expect(lUser.username).toBe(lUserConf.username);
-			expect(lUser.email).toBe(lUserConf.email);
+			expect(lUser.getId()).toBe(lUserConf._id);
+			expect(lUser.getName()).toBe(lUserConf.name);
+			expect(lUser.getUsername()).toBe(lUserConf.username);
+			expect(lUser.getEmail()).toBe(lUserConf.email);
 		});
 
 		it("should log a warning for an invalid property", function () {
 			var lUserConf = {
-					id                       : 123,
-					name                     : "Test",
-					firstName                : "Testerke",
-					username                 : "Tester123",
-					email                    : "tester@test.com",
-					invalid_property_for_user: false
+					_id            : 123,
+					name           : "Test",
+					firstName      : "Testerke",
+					username       : "Tester123",
+					email          : "tester@test.com",
+					invalidProperty: false
 				},
 				lUser = new imports.User(lUserConf);
 
 			expect(imports.Logger.warn).toHaveBeenCalled();
 
-			expect(lUser.id).toBe(lUserConf.id);
-			expect(lUser.name).toBe(lUserConf.name);
-			expect(lUser.firstName).toBe(lUserConf.firstName);
-			expect(lUser.username).toBe(lUserConf.username);
-			expect(lUser.email).toBe(lUserConf.email);
-			expect(lUser.invalid_property_for_user).toBeUndefined();
+			expect(lUser.getId()).toBe(lUserConf._id);
+			expect(lUser.getName()).toBe(lUserConf.name);
+			expect(lUser.getFirstName()).toBe(lUserConf.firstName);
+			expect(lUser.getUsername()).toBe(lUserConf.username);
+			expect(lUser.getEmail()).toBe(lUserConf.email);
+			expect(lUser.invalidProperty).toBeUndefined();
 		});
 	});
 
@@ -112,12 +112,13 @@ describe("User model", function () {
 	});
 
 	describe("find", function () {
+		//TODO
 		it("should find a user by an id", function () {
 			var lUser = new imports.User({
-					id: 123
+					_id: 123
 				}),
 				lExpectedUser = new imports.User({
-					id       : 123,
+					_id      : 123,
 					name     : "tester",
 					firstName: "tester",
 					username : "tester123",
@@ -136,7 +137,7 @@ describe("User model", function () {
 	describe("validate", function () {
 		it("should return true for a valid model", function () {
 			var lUser = new imports.User({
-					id       : 123,
+					_id      : 123,
 					name     : "tester",
 					firstName: "tester",
 					username : "tester123",
@@ -144,7 +145,7 @@ describe("User model", function () {
 				}),
 				lResult,
 				lExpectedUser = new imports.User({
-					id       : 123,
+					_id      : 123,
 					name     : "tester",
 					firstName: "tester",
 					username : "tester123",
@@ -181,7 +182,7 @@ describe("User model", function () {
 
 		it("should return false for an invalid model", function () {
 			var lUser = new imports.User({
-					id       : "aString",
+					_id      : "aString",
 					name     : "tester",
 					firstName: "tester",
 					username : "tester123",
@@ -202,7 +203,7 @@ describe("User model", function () {
 	describe("method toModel", function () {
 		it("should return the model", function () {
 			var lConf = {
-					id       : 123,
+					_id      : 123,
 					name     : "tester",
 					firstName: "tester",
 					username : "tester123",

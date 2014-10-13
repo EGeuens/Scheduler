@@ -131,14 +131,14 @@ describe("Logger", function () {
 			var lText = "Hello";
 			imports.Logger.warn(lText);
 
-			expect(console.log).toHaveBeenCalledWith(["[LOG]", lText].join(" ").yellow);
+			expect(console.log).toHaveBeenCalledWith(["[WARNING]", lText].join(" ").yellow);
 		});
 
 		it("should call console.log with specified parameters (multiple) joined by a space (color: yellow)", function () {
 			var lText = "Hello", lText2 = "Test";
 			imports.Logger.warn(lText, lText2);
 
-			expect(console.log).toHaveBeenCalledWith(["[LOG]", lText, lText2].join(" ").yellow);
+			expect(console.log).toHaveBeenCalledWith(["[WARNING]", lText, lText2].join(" ").yellow);
 		});
 	});
 

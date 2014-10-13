@@ -11,7 +11,7 @@ var imports = {
 	},
 	privates = {
 		model: {
-			id       : { type: Number, default: null, validate: ["number"] },
+			_id: { type: Number, default: null, validate: ["number"] },
 			name     : { type: String, default: "", validate: ["required", "alphabetic"] },
 			firstName: { type: String, default: "", validate: ["required", "alphabetic"] },
 			username : { type: String, default: "", validate: ["required", "alphanumeric"] },
@@ -46,11 +46,11 @@ User.prototype.getModelDefinition = function () {
 };
 
 User.prototype.getId = function () {
-	return this.id;
+	return this._id;
 };
 
-User.prototype.setId = function (id) {
-	this.id = id;
+User.prototype.setId = function (_id) {
+	this._id = _id;
 };
 
 User.prototype.getName = function () {

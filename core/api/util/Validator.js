@@ -34,6 +34,8 @@ Validator.prototype.checkType = function (val, type) {
 			return imports._.isString(val);
 		case Number:
 			return imports._.isNumber(val);
+		case Object:
+			return imports._.isObject(val);
 		default :
 			return true;
 	}

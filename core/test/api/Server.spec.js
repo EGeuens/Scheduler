@@ -7,8 +7,7 @@ var imports = {
 	express     : require("express"),
 	http        : require("http"),
 	io          : require("socket.io"),
-	Module      : require("../../api/model/Module"),
-	Q           : require("q")
+	Module      : require("../../api/model/Module")
 };
 
 describe("Server", function () {

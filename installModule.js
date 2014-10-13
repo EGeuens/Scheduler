@@ -43,10 +43,10 @@ var imports = {
 
 			imports.fs.readFile(lModuleConfigFile, { encoding: "utf8" }, function (err, data) {
 				if (err) {
-					throw imports.ErrorFactory.create("Module configuration file not found, it should be:", lModuleConfigFile)
+					throw imports.ErrorFactory.create("Module configuration file not found, it should be:", lModuleConfigFile);
 				}
 
-				privates.findPreInstalledModules(data)
+				privates.findPreInstalledModules(data);
 			});
 
 		},
@@ -98,7 +98,7 @@ var imports = {
 				privates.doInstall();
 			};
 
-			privates.jasmineConfig.specFolders.push(__dirname + privates.module.rootPath + '/test/api');
+			privates.jasmineConfig.specFolders.push(__dirname + privates.module.rootPath + "/test/api");
 			privates.jasmineConfig.onComplete = onJasmineComplete;
 
 			imports.jasmine.executeSpecsInFolder(privates.jasmineConfig);
@@ -108,11 +108,9 @@ var imports = {
 			privates.module.save(function (err) {
 				if (!err) {
 					console.log(privates.module.getName(), "was successfully", privates.module.getId() ? "overwritten!" : "installed!");
-					process.exit(0);
 				}
 				else {
 					console.error(err);
-					process.exit(1);
 				}
 			});
 		}    };

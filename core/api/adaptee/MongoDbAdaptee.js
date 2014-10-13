@@ -7,11 +7,15 @@
  */
 
 var imports = {
-	ErrorFactory: require("../factory/ErrorFactory"),
-	Config      : require("../Config"),
-	Q           : require("q"),
-	mongodb     : require("mongodb")
-};
+		_           : require("underscore"),
+		ErrorFactory: require("../factory/ErrorFactory"),
+		Logger      : require("../util/Logger"),
+		Config      : require("../Config"),
+		mongodb     : require("mongodb")
+	},
+	privates = {
+		uniqueIdPrefix: "Query.MongoDB."
+	};
 
 /**
  * @constructor
@@ -33,9 +37,11 @@ MongoDbAdaptee.prototype.openDb = function (cb) {
 		lMongoServerConfig = lMongoConfig.server;
 
 	if (!me.db) {
+		imports.Logger.debug("Opening MongoDB");
 		me.db = imports.mongodb.Db(lMongoConfig.db, new imports.mongodb.Server(lMongoServerConfig.host, lMongoServerConfig.port, lMongoServerConfig.options), lMongoConfig.options);
 		me.db.open(function (err, db) {
 			try {
+				imports.Logger.debug("MongoDB is open for business!");
 				me.db.on("close", function () {
 					me.db = null;
 				});
@@ -66,8 +72,24 @@ MongoDbAdaptee.prototype.query = function (collection, query, cb) {
 			return cb(err);
 		}
 
+		query.id = imports._.uniqueId(privates.uniqueIdPrefix);
+
+		if (!query.selector) {
+			query.selector = {};
+		}
+
+		if (!query.fields) {
+			query.fields = {};
+		}
+
+		if (!query.options) {
+			query.options = {};
+		}
+
 		var lCollection = db.collection(collection);
-		lCollection.find(query.selector).toArray(function (err, result) {
+		imports.Logger.debug("Gonna do a QUERY [MongoDB] on collection:", collection, "\nGenerated id:", query.id, "\nHere's the selector:\n", query.selector);
+		lCollection.find(query.selector, query.fields, query.options).toArray(function (err, result) {
+			imports.Logger.debug("Query", query.id, "returned!", result);
 			cb(err, result);
 		});
 	});
@@ -87,9 +109,18 @@ MongoDbAdaptee.prototype.save = function (collection, record, cb) {
 			return cb(err);
 		}
 
+		var query = { id: imports._.uniqueId(privates.uniqueIdPrefix), record: record };
+
 		var lCollection = db.collection(collection);
-		lCollection.save(record, function (err, saved) {
-			cb(err, saved); //TODO check this
+		imports.Logger.debug("Gonna do a SAVE [MongoDB] on collection:", collection, "\nGenerated id:", query.id, "\nHere's the record:\n", query.record);
+		lCollection.save(query.record, function (err, saved) {
+			imports.Logger.debug("Query", query.id, "returned!", saved);
+			var lReturn = null;
+
+			if (!err) {
+				lReturn = query.record;
+			}
+			cb(err, lReturn); //TODO check this
 		});
 	});
 };

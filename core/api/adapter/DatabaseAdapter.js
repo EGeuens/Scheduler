@@ -8,7 +8,6 @@
 
 var imports = {
 		ErrorFactory  : require("../factory/ErrorFactory"),
-		Q             : require("q"),
 		MongoDbAdaptee: require("../adaptee/MongoDbAdaptee")
 	},
 	privates = {
@@ -46,7 +45,6 @@ DatabaseAdapter.prototype.MONGODB = "mongodb";
  * @param collection Collection/table on the database
  * @param query The query
  * @param cb
- * @returns {promise|*|Q.promise}
  */
 DatabaseAdapter.prototype.query = function (type, collection, query, cb) {
 	privates.callAdaptee("query", type, collection, query, cb);
@@ -58,7 +56,6 @@ DatabaseAdapter.prototype.query = function (type, collection, query, cb) {
  * @param collection Collection/table on the database
  * @param rec The record
  * @param cb
- * @returns {promise|*|Q.promise}
  */
 DatabaseAdapter.prototype.save = function (type, collection, rec, cb) {
 	privates.callAdaptee("save", type, collection, rec, cb);

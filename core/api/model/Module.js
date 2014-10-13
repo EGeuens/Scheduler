@@ -8,7 +8,6 @@
 
 var imports = {
 		_              : require("underscore"),
-		Q              : require("q"),
 		ModelFactory   : require("../factory/ModelFactory"),
 		DatabaseAdapter: require("../adapter/DatabaseAdapter")
 	},
@@ -16,7 +15,7 @@ var imports = {
 		dbType    : imports.DatabaseAdapter.MONGODB,
 		collection: "modules",
 		model     : {
-			_id       : { type: Number, default: null, validate: ["number"] },
+			_id: { type: Object, default: null, validate: [] },
 			name      : { type: String, default: "", validate: ["required", "alphabetic"] },
 			version   : { type: String, default: "", validate: ["alphanumeric"] },
 			rootPath  : { type: String, default: "", validate: ["required", "alphanumeric"] },
@@ -41,34 +40,25 @@ var Module = imports.ModelFactory.create(privates.model);
  * @returns {Array}
  */
 Module.prototype.find = function (query, cb) {
-	query = query || {};
-
-	if (!query.selector) {
-		query.selector = {};
-
-		//is it called as a static function?
-		if (this) {
-			query.selector = this.toModel();
-		}
-	}
-
-	if (!query.options) {
-		query.options = {};
-	}
-
 	imports.DatabaseAdapter.query(privates.dbType, privates.collection, query, function (err, modules) {
-		var lModules = null,
+		var lReturn = null,
 			lModule, i;
 
 		if (!err) {
-			lModules = [];
+			if (imports._.isUndefined(modules.length)) {
+				lReturn = new Module(modules);
+				cb(err, lReturn);
+				return;
+			}
+
+			lReturn = [];
 			for (i = 0; i < modules.length; i++) {
-				lModule = modules[i];
-				lModules.push(new Module(lModule));
+				lModule = new Module(modules[i]);
+				lReturn.push(lModule);
 			}
 		}
 
-		cb(err, lModules);
+		cb(err, lReturn);
 	});
 };
 

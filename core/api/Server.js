@@ -31,7 +31,63 @@ var imports = {
 		partsNeeded: ["setupSockets", "setupRoutes"],
 
 		superSecret: "My_Super+5ecr3T",
-		MongoStore : imports.MongoStore(imports.Session)
+		MongoStore: imports.MongoStore(imports.Session),
+
+		setupApi: function (modules, moduleNames) {
+			var lModule, lModuleRouter, lRouter, i,
+				lModulesFailed = 0, lAppBasePath = __dirname + "/../..";
+
+			if (moduleNames) {
+				imports.Logger.log("Setting up API routes for:", moduleNames);
+			}
+			else {
+				imports.Logger.log("No routes to set up");
+			}
+
+			for (i = 0; i < modules.length; i++) {
+				lModule = modules[i];
+				try {
+					lModuleRouter = require(lAppBasePath + lModule.rootPath + "/api/Router");
+					lRouter = imports.express.Router({
+						caseSensitive: false, //false is default
+						strict       : false, //false is default
+						mergeParams  : false //false is default
+					});
+					lModuleRouter.setup(lRouter);
+					privates.app.use(lModule.apiPath || lModule.rootPath, lRouter);
+					imports.Logger.info("Setting up API routes for:", lModule.name, "was a complete success!");
+				}
+				catch (e) {
+					if (e.code === "MODULE_NOT_FOUND") {
+						imports.Logger.warn("No Router found for:", lModule.name);
+						return;
+					}
+					lModulesFailed++;
+					imports.Logger.error("Setting up API routes for:", lModule.name, "was a complete failure!\n", e.message, "\n", e.stack);
+				}
+			}
+			if (lModulesFailed) {
+				imports.Logger.error("We failed at loading", lModulesFailed, "module(s). Look above for more info.");
+			}
+
+			imports.Logger.info(modules.length - lModulesFailed, "module(s) were set up successfully!");
+		},
+
+		setupStatics: function (modules, moduleNames) {
+			var lModule, i, lAppBasePath = __dirname + "/../..";
+
+			if (moduleNames) {
+				imports.Logger.log("Setting up static paths for:", moduleNames);
+			}
+			else {
+				imports.Logger.log("No static paths to set up");
+			}
+			//for core module send files from /core/app
+			for (i = 0; i < modules.length; i++) {
+				lModule = modules[i];
+				privates.app.use(lModule.publicPath || lModule.rootPath, imports.FileHandler(lModule.publicPath || lModule.rootPath, lAppBasePath + lModule.rootPath + lModule.publicDir));
+			}
+		}
 	};
 
 /**
@@ -154,57 +210,13 @@ Server.prototype.setupRoutes = function (modules) {
 
 	imports.Logger.log("Server going to listen on port", me.getApp().get("port"));
 	lServer = me.getHttp().listen(me.getApp().get("port"), function () {
-		var lModuleNames = imports._.pluck(modules, "name").join(", "),
-			lAppBasePath = __dirname + "/../..",
-			lModule, lModuleRouter, lRouter, i,
-			lModulesFailed = 0;
+		var lModuleNames = imports._.pluck(modules, "name").join(", ");
 
 		imports.Logger.log(""); // print newline
 		imports.Logger.log("Server listening on port", me.getApp().get("port"));
 
-		if (lModuleNames) {
-			imports.Logger.log("Setting up API routes for:", lModuleNames);
-		}
-		else {
-			imports.Logger.log("No routes to set up");
-		}
-		for (i = 0; i < modules.length; i++) {
-			lModule = modules[i];
-			try {
-				lModuleRouter = require(lAppBasePath + lModule.rootPath + "/api/Router");
-				lRouter = imports.express.Router({
-					//These are the default parameters, but for clarity written out.
-					caseSensitive: false,
-					strict       : false,
-					mergeParams  : false
-				});
-				lModuleRouter.setup(lRouter);
-				privates.app.use(lModule.apiPath || lModule.rootPath, lRouter);
-				imports.Logger.info("Setting up API routes for:", lModule.name, "was a complete success!");
-			}
-			catch (e) {
-				lModulesFailed++;
-				imports.Logger.error("Setting up API routes for:", lModule.name, "was a complete failure!\n", e.message, "\n", e.stack);
-			}
-		}
-		if (lModulesFailed) {
-			imports.Logger.error("We failed at loading", lModulesFailed, "module(s). Look above for more info.");
-		}
-		else {
-			imports.Logger.info(modules.length, "module(s) were set up successfully!");
-		}
-
-		if (lModuleNames) {
-			imports.Logger.log("Setting up static paths for:", lModuleNames);
-		}
-		else {
-			imports.Logger.log("No static paths to set up");
-		}
-		//for core module send files from /core/app
-		for (i = 0; i < modules.length; i++) {
-			lModule = modules[i];
-			privates.app.use(lModule.publicPath || lModule.rootPath, imports.FileHandler(lModule.publicPath || lModule.rootPath, lAppBasePath + lModule.rootPath + lModule.publicDir));
-		}
+		privates.setupApi(modules, lModuleNames);
+		privates.setupStatics(modules, lModuleNames);
 
 		imports.Logger.log("Setting error 404/500 handlers");
 		privates.app.use(imports.FileHandler.prototype.notFoundHandler);

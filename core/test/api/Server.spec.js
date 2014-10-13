@@ -55,7 +55,7 @@ describe("Server", function () {
 			expect(imports.Server.initLogger).toHaveBeenCalled();
 			expect(imports.Server.prepareServer).toHaveBeenCalled();
 			expect(imports.Module.prototype.find).toHaveBeenCalled();
-			expect(imports.Server.setupListeners).not.toHaveBeenCalled();
+			expect(imports.Server.setupListeners).toHaveBeenCalled();
 		});
 
 		it("should close the server when no modules are found", function () {

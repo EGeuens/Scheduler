@@ -7,14 +7,21 @@
  */
 
 var imports = {
-		ModelFactory: require("../factory/ModelFactory")
+		_              : require("underscore"),
+		ModelFactory   : require("../factory/ModelFactory"),
+		Validator      : require("../util/Validator"),
+		PasswordHash   : require("password-hash"),
+		DatabaseAdapter: require("../adapter/DatabaseAdapter")
 	},
 	privates = {
-		model: {
-			_id: { type: Number, default: null, validate: ["number"] },
+		dbType    : imports.DatabaseAdapter.MONGODB,
+		collection: "users",
+		model     : {
+			_id     : { type: Number, default: null, validate: ["number"] },
 			name     : { type: String, default: "", validate: ["required", "alphabetic"] },
 			firstName: { type: String, default: "", validate: ["required", "alphabetic"] },
 			username : { type: String, default: "", validate: ["required", "alphanumeric"] },
+			password: { type: String, default: "", validate: [] },
 			email    : { type: String, default: "", validate: ["required", "email"] }
 		}
 	};
@@ -27,15 +34,41 @@ var User = imports.ModelFactory.create(privates.model);
 ////
 // Public methods
 ///
-User.prototype.find = function () {
-	//TODO think this through further
+User.prototype.find = function (query, cb) {
+	imports.DatabaseAdapter.query(privates.dbType, privates.collection, { selector: query }, function (err, users) {
+		var lReturn = null,
+			lUser, i;
+
+		if (!err) {
+			if (imports._.isUndefined(users.length)) {
+				lReturn = new User(users);
+				cb(err, lReturn);
+				return;
+			}
+
+			lReturn = [];
+			for (i = 0; i < users.length; i++) {
+				lUser = new User(users[i]);
+				lReturn.push(lUser);
+			}
+		}
+
+		cb(err, lReturn);
+	});
+};
+
+User.prototype.isValidPassword = function (cb) {
 	var me = this;
-	me.setId(123);
-	me.setName("tester");
-	me.setFirstName("tester");
-	me.setUsername("tester123");
-	me.setEmail("tester@test.com");
-	return me;
+
+	User.prototype.find({
+		selector: me.toModel()
+	}, function (err, result) {
+		if (err) {
+			return cb(err, false);
+		}
+
+		cb(null, me.getPassword() === result.getPassword());
+	});
 };
 
 ////
@@ -83,6 +116,22 @@ User.prototype.getFirstName = function () {
 
 User.prototype.setFirstName = function (firstName) {
 	this.firstName = firstName;
+};
+
+User.prototype.getPassword = function () {
+	return this.password;
+};
+
+/**
+ * Sets the password as a hash(!)
+ * @param password
+ */
+User.prototype.setPassword = function (password) {
+	if (!imports.PasswordHash.isHashed(password)) {
+		password = imports.PasswordHash.generate(password);
+	}
+
+	this.password = password;
 };
 
 module.exports = User;

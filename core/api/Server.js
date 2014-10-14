@@ -7,20 +7,22 @@
  * @date 5/09/2014
  */
 var imports = {
-		_           : require("underscore"),
-		express     : require("express"),
-		http        : require("http"),
-		io          : require("socket.io"),
-		Config      : require("./Config"),
-		Environments: require("./enum/Environments"),
-		Logger      : require("./util/Logger"),
-		FileHandler : require("./handler/FileHandler"),
-		ErrorHandler: require("./handler/ErrorHandler"),
-		Module      : require("./model/Module"),
-		MongoStore  : require("connect-mongo"),
-		CookieParser: require("cookie-parser"),
-		Session     : require("express-session"),
-		BodyParser  : require("body-parser")
+		_                    : require("underscore"),
+		express              : require("express"),
+		http                 : require("http"),
+		io                   : require("socket.io"),
+		Config               : require("./Config"),
+		Environments         : require("./enum/Environments"),
+		Logger               : require("./util/Logger"),
+		AuthenticationHandler: require("./handler/AuthenticationHandler"),
+		FileHandler          : require("./handler/FileHandler"),
+		ErrorHandler         : require("./handler/ErrorHandler"),
+		Module               : require("./model/Module"),
+		MongoStore           : require("connect-mongo"),
+		CookieParser         : require("cookie-parser"),
+		Session              : require("express-session"),
+		Passport             : require("passport"),
+		BodyParser           : require("body-parser")
 
 	},
 	privates = {
@@ -31,7 +33,7 @@ var imports = {
 		partsNeeded: ["setupSockets", "setupRoutes"],
 
 		superSecret: "My_Super+5ecr3T",
-		MongoStore: imports.MongoStore(imports.Session),
+		MongoStore : imports.MongoStore(imports.Session),
 
 		setupApi: function (modules, moduleNames) {
 			var lModule, lModuleRouter, lRouter, i,
@@ -214,6 +216,8 @@ Server.prototype.setupRoutes = function (modules) {
 
 		imports.Logger.log(""); // print newline
 		imports.Logger.log("Server listening on port", me.getApp().get("port"));
+
+		imports.AuthenticationHandler.init(me.getApp());
 
 		privates.setupApi(modules, lModuleNames);
 		privates.setupStatics(modules, lModuleNames);

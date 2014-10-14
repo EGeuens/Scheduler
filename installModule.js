@@ -22,12 +22,7 @@ var imports = {
 			teamcity         : false,
 			useRequireJs     : false,
 			regExpSpec       : /.*\.spec\.js/,
-			junitreport      : {
-				report        : true,
-				savePath      : __dirname + "/reports/",
-				useDotNotation: true,
-				consolidate   : true
-			},
+			junitreport      : false,
 			includeStackTrace: true,
 			growl            : false
 		},
@@ -56,9 +51,7 @@ var imports = {
 			privates.module = new imports.Module(lConfig);
 
 			imports.Module.prototype.find({
-				selector: {
-					name: privates.module.getName()
-				}
+				name: privates.module.getName()
 			}, function (err, modules) {
 				if (err) {
 					throw imports.ErrorFactory.create("An error occurred while trying to search for existing modules", err);

@@ -40,7 +40,17 @@ var Module = imports.ModelFactory.create(privates.model);
  * @returns {Array}
  */
 Module.prototype.find = function (query, cb) {
-	imports.DatabaseAdapter.query(privates.dbType, privates.collection, query, function (err, modules) {
+	var lQuery = {
+		selector: query,
+		fields  : {},
+		options : {}
+	};
+
+	if (lQuery.selector.isContext) {
+		lQuery.selector = lQuery.selector.getQuery();
+	}
+
+	imports.DatabaseAdapter.query(privates.dbType, privates.collection, lQuery, function (err, modules) {
 		var lReturn = null,
 			lModule, i;
 

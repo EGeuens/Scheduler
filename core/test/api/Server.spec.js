@@ -1,13 +1,15 @@
 "use strict";
 var imports = {
-	Logger      : require("../../api/util/Logger"),
-	Environments: require("../../api/enum/Environments"),
-	Config      : require("../../api/Config"),
-	Server      : require("../../api/Server"),
-	express     : require("express"),
-	http        : require("http"),
-	io          : require("socket.io"),
-	Module      : require("../../api/model/Module")
+	Logger               : require("../../api/util/Logger"),
+	Environments         : require("../../api/enum/Environments"),
+	Config               : require("../../api/Config"),
+	Server               : require("../../api/Server"),
+	AuthenticationHandler: require("../../api/handler/AuthenticationHandler"),
+	express              : require("express"),
+	http                 : require("http"),
+	io                   : require("socket.io"),
+	passport             : require("passport"),
+	Module               : require("../../api/model/Module")
 };
 
 describe("Server", function () {
@@ -143,6 +145,7 @@ describe("Server", function () {
 			imports.Server.setIo(imports.io(imports.Server.getHttp()));
 
 			spyOn(imports.Server, "completeSetup");
+			spyOn(imports.AuthenticationHandler, "init");
 			spyOn(imports.Server.getHttp(), "listen").andCallFake(function (port, cb) {
 				cb();
 			});
@@ -152,6 +155,7 @@ describe("Server", function () {
 			imports.Server.setupRoutes(lModules);
 
 			expect(imports.Server.getHttp().listen).toHaveBeenCalled();
+			expect(imports.AuthenticationHandler.init).toHaveBeenCalled();
 			expect(imports.Server.completeSetup).toHaveBeenCalledWith("setupRoutes");
 		});
 	});

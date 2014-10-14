@@ -6,6 +6,13 @@
  * @date 8/10/2014
  */
 
+var imports = {
+		ApiHandler: require("./handler/ApiHandler")
+	},
+	privates = {
+		ApiHandler: null
+	};
+
 /**
  * @constructor
  */
@@ -18,18 +25,17 @@ var Router = function () {
  * @param router
  */
 Router.prototype.setup = function (router) {
-	router.get("/modules", function (req, res) {
-		var lModule = require("./model/Module"),
-			lQuery = req.query;
+	privates.ApiHandler = new imports.ApiHandler(router);
 
-		lModule.prototype.find(lQuery, function (err, modules) {
-			if (err) {
-				res.status(400).send(err);
-				return;
-			}
-			res.status(200).send(modules);
-		});
-	});
+	//	var passport = require("passport");
+	//	router.post("/login", passport.authenticate("local"), function (req, res) {
+	//		console.log("Happy");
+	//		res.status(200).send({ message: "yihaa"});
+	//	});
+
+	var lModule = require("./model/Module");
+	privates.ApiHandler.get("/modules", lModule.prototype.find);
+
 	router.get("/bla", function (req, res) {
 		res.status(200).send({ message: "hi" });
 	});

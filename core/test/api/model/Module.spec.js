@@ -156,15 +156,34 @@ describe("Module model", function () {
 				expect(typeof query).toBe("object");
 				expect(query.selector).toEqual({ _id: lModuleConfig._id });
 
-				var lReturn = [], i;
-				for (i = 0; i < lExpected.length; i++) {
-					lReturn.push(lExpected[i].toModel());
-				}
-				cb(null, lReturn);
+				cb(null, lExpected);
 			});
 		});
 
-		it("should find an array of modules by an id", function () {
+		it("should find a single module", function () {
+			var lConfig = {
+					_id: lModuleConfig._id
+				},
+				lModule;
+
+			lExpected = new imports.Module(lModuleConfig);
+
+			imports.Module.prototype.find(lConfig, function (err, result) {
+				expect(err).toBe(null);
+				expect(imports._.isObject(result)).toBe(true);
+
+				lModule = result;
+				expect(lModule.getId()).toBe(lExpected.getId());
+				expect(lModule.getName()).toBe(lExpected.getName());
+				expect(lModule.getVersion()).toBe(lExpected.getVersion());
+				expect(lModule.getRootPath()).toBe(lExpected.getRootPath());
+				expect(lModule.getApiPath()).toBe(lExpected.getApiPath());
+				expect(lModule.getPublicPath()).toBe(lExpected.getPublicPath());
+				expect(lModule.getPublicDir()).toBe(lExpected.getPublicDir());
+			});
+		});
+
+		it("should find an array of modules", function () {
 			var lConfig = {
 					_id: lModuleConfig._id
 				},
@@ -172,9 +191,7 @@ describe("Module model", function () {
 
 			lExpected = [new imports.Module(lModuleConfig)];
 
-			imports.Module.prototype.find({
-				selector: lConfig
-			}, function (err, result) {
+			imports.Module.prototype.find(lConfig, function (err, result) {
 				expect(err).toBe(null);
 				expect(imports._.isArray(result)).toBe(true);
 

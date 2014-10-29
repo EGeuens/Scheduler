@@ -1,11 +1,4 @@
 "use strict";
-/**
- * File handling express middleware
- * @class {core.api.handler.FileHandler}
- * @author Erwin
- * @date 12/09/2014
- */
-
 var imports = {
 		fs    : require("fs"),
 		path  : require("path"),
@@ -15,6 +8,10 @@ var imports = {
 	};
 
 /**
+ * File handling express middleware
+ * @class core.api.handler.FileHandler
+ * @author Erwin
+ * @date 12/09/2014
  * @constructor
  */
 var FileHandler = function (rootPath, basePath) {

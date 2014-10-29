@@ -1,11 +1,4 @@
 "use strict";
-/**
- * Handles Authentication :O
- * @class core.api.handler.AuthenticationHandler
- * @author Erwin
- * @date 14/10/2014
- */
-
 var imports = {
 		_            : require("underscore"),
 		Passport     : require("passport"),
@@ -17,13 +10,22 @@ var imports = {
 	privates = {
 		LocalStrategy: imports.PassportLocal.Strategy
 	};
+
 /**
+ * Handles Authentication :O
+ * @class core.api.handler.AuthenticationHandler
+ * @author Erwin
+ * @date 14/10/2014
  * @constructor
  */
 var AuthenticationHandler = function () {
 	return this;
 };
 
+/**
+ * Initialise authentication
+ * @param app The Express application on which to authenticate
+ */
 AuthenticationHandler.prototype.init = function (app) {
 	var me = this;
 
@@ -35,6 +37,9 @@ AuthenticationHandler.prototype.init = function (app) {
 	me.setupSerializers();
 };
 
+/**
+ * Sets up the used strategies
+ */
 AuthenticationHandler.prototype.setupStrategies = function () {
 	var me = this;
 
@@ -42,6 +47,9 @@ AuthenticationHandler.prototype.setupStrategies = function () {
 	imports.Passport.use(new privates.LocalStrategy(me.localStrategy));
 };
 
+/**
+ * Sets up the used (de-)serializer(s)
+ */
 AuthenticationHandler.prototype.setupSerializers = function () {
 	imports.Passport.serializeUser(function (user, done) {
 		done(null, user.getId());
@@ -61,6 +69,12 @@ AuthenticationHandler.prototype.setupSerializers = function () {
 	});
 };
 
+/**
+ * Local strategy will check for a username and see if the passwords match
+ * @param username
+ * @param password
+ * @param done
+ */
 AuthenticationHandler.prototype.localStrategy = function (username, password, done) {
 	imports.User.prototype.find({ username: username }, function (err, users) {
 		if (err) {

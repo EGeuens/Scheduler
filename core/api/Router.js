@@ -38,7 +38,7 @@ Router.prototype.setup = function (router) {
 
 	lModule = require("./model/User");
 	privates.ApiHandler.get("/users", lModule.prototype.find);
-	privates.ApiHandler.post("/users", lModule.prototype.save);
+	privates.ApiHandler.post("/users", lModule.prototype.save, true);
 
 	router.get("/bla", function (req, res) {
 		res.status(200).send({ message: "hi" });

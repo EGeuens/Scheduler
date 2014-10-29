@@ -22,6 +22,8 @@ var ErrorHandler = function () {
 ErrorHandler.prototype.catchEverything = function (err, req, res, next) {
 	res.status(500);
 
+	imports.Logger.error(err.message);
+
 	// respond with html page
 	if (req.accepts("html")) {
 		res.sendFile(imports.path.resolve(__dirname + "/../../app/500.html"));

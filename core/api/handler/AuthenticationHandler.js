@@ -11,7 +11,8 @@ var imports = {
 		Passport     : require("passport"),
 		PassportLocal: require("passport-local"),
 		User         : require("../model/User"),
-		Messages     : require("../enum/Messages")
+		Messages    : require("../enum/Messages"),
+		ErrorFactory: require("../factory/ErrorFactory")
 	},
 	privates = {
 		LocalStrategy: imports.PassportLocal.Strategy
@@ -48,6 +49,13 @@ AuthenticationHandler.prototype.setupSerializers = function () {
 
 	imports.Passport.deserializeUser(function (id, done) {
 		imports.User.prototype.find({ _id: id }, function (err, user) {
+			if (!err && user.length !== 1) {
+				err = imports.ErrorFactory.create(imports.Messages.UNKNOWN_USER);
+			}
+			else {
+				user = user[0];
+			}
+
 			return done(err, user);
 		});
 	});

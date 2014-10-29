@@ -9,7 +9,8 @@
 var imports = {
 		Messages    : require("../enum/Messages"),
 		ModelFactory: require("../factory/ModelFactory"),
-		ErrorFactory: require("../factory/ErrorFactory")
+		ErrorFactory: require("../factory/ErrorFactory"),
+		Passport    : require("passport")
 	},
 	privates = {
 		hasResponded : false,
@@ -18,7 +19,22 @@ var imports = {
 		current      : null,
 		authenticate : null,
 		authorisation: null,
-		query        : null
+		query: null,
+
+		doExecute: function (context) {
+			context.getCurrent()(context, function (err, result, statusCode) {
+				if (err) {
+					return context.getResponse().status(400).send(
+						imports.ErrorFactory.create("Code:", err.code, "Message:", err.message)
+					);
+				}
+
+				if (!privates.hasResponded) {
+					privates.hasResponded = true;
+					return context.getResponse().status(statusCode || 200).send(result);
+				}
+			});
+		}
 	};
 
 /**
@@ -44,26 +60,20 @@ Context.prototype.execute = function () {
 
 	if (me.getAuthenticate()) {
 		//TODO handle authentication
-		return false;
-	}
 
-	if (me.getAuthorisation().length > 0) {
-		//TODO handle authorisation
-		return false;
-	}
-
-	me.getCurrent()(me, function (err, result, statusCode) {
-		if (err) {
-			return me.getResponse().status(400).send(
-				imports.ErrorFactory.create("Code:", err.code, "Message:", err.message)
-			);
+		if (me.getAuthorisation().length > 0) {
+			//TODO handle authorisation
+			return false;
 		}
-
-		if (!privates.hasResponded) {
-			privates.hasResponded = true;
-			return me.getResponse().status(statusCode || 200).send(result);
+		else {
+			imports.Passport.authenticate("local", function () {
+				privates.doExecute(me);
+			})(me.getRequest(), me.getResponse());
 		}
-	});
+	}
+	else {
+		privates.doExecute(me);
+	}
 };
 
 /**

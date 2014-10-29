@@ -273,7 +273,7 @@ describe("User model", function () {
 			var lUser = new imports.User(lUserConfig);
 
 			spyOn(imports.User.prototype, "find").andCallFake(function (query, cb) {
-				cb(null, lUser);
+				cb(null, [lUser]);
 			});
 
 			lUser.isValidPassword(function (err, result) {

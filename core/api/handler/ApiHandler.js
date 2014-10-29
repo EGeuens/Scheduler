@@ -43,10 +43,8 @@ var ApiHandler = function (router) {
 	return this;
 };
 
-ApiHandler.prototype.post = function (uri, fn) {
-	privates.router.post(uri, imports.Passport.authenticate("local"), function (req, res) {
-
-	});
+ApiHandler.prototype.post = function (uri, fn, authenticate, roles) {
+	privates.router.post(uri, privates.provideContext(uri, fn, authenticate, roles));
 };
 
 /**

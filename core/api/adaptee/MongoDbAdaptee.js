@@ -86,6 +86,10 @@ MongoDbAdaptee.prototype.query = function (collection, query, cb) {
 			query.options = {};
 		}
 
+		if (query.selector.hasOwnProperty("_id")) {
+			query.selector._id = imports.mongodb.ObjectID(query.selector._id.toString());
+		}
+
 		var lCollection = db.collection(collection);
 		imports.Logger.debug("Gonna do a QUERY [MongoDB] on collection:", collection, "\nGenerated id:", query.id, "\nHere's the selector:\n", query.selector);
 		lCollection.find(query.selector, query.fields, query.options).toArray(function (err, result) {

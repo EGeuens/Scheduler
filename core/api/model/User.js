@@ -9,6 +9,7 @@
 var imports = {
 		_              : require("underscore"),
 		ModelFactory   : require("../factory/ModelFactory"),
+		ErrorFactory: require("../factory/ErrorFactory"),
 		Validator      : require("../util/Validator"),
 		PasswordHash   : require("password-hash"),
 		DatabaseAdapter: require("../adapter/DatabaseAdapter")
@@ -34,40 +35,74 @@ var User = imports.ModelFactory.create(privates.model);
 ////
 // Public methods
 ///
+/**
+ * Updates or creates a user
+ * @param context
+ * @param cb
+ */
+User.prototype.save = function (context, cb) {
+	var me = this,
+		lUser = new User(context.getQuery());
+
+	if (!lUser.validate()) {
+		return cb(null, { message: "Invalid user" }, 412);
+	}
+
+	imports.DatabaseAdapter.save(privates.dbType, privates.collection, lUser.toModel(), function (err, saved) {
+		var lUser = null;
+
+		if (!err && saved) {
+			lUser = new User(saved);
+		}
+
+		cb(err, lUser);
+	});
+};
+
+/**
+ * Find one or multiple user(s)
+ * @param query
+ * @param cb
+ */
 User.prototype.find = function (query, cb) {
 	imports.DatabaseAdapter.query(privates.dbType, privates.collection, { selector: query }, function (err, users) {
-		var lReturn = null,
+		var lUsers = null,
 			lUser, i;
 
 		if (!err) {
-			if (imports._.isUndefined(users.length)) {
-				lReturn = new User(users);
-				cb(err, lReturn);
-				return;
+			if (imports._.isObject(users) && !imports._.isArray(users)) {
+				lUsers = [new User(users)];
 			}
-
-			lReturn = [];
-			for (i = 0; i < users.length; i++) {
-				lUser = new User(users[i]);
-				lReturn.push(lUser);
+			else {
+				lUsers = [];
+				for (i = 0; i < users.length; i++) {
+					lUser = new User(users[i]);
+					lUsers.push(lUser);
+				}
 			}
 		}
 
-		cb(err, lReturn);
+		cb(err, lUsers);
 	});
 };
 
 User.prototype.isValidPassword = function (cb) {
-	var me = this;
+	var me = this,
+		lSelector = me.toModel();
 
-	User.prototype.find({
-		selector: me.toModel()
-	}, function (err, result) {
+	delete lSelector.password;
+
+	User.prototype.find(lSelector, function (err, result) {
 		if (err) {
 			return cb(err, false);
 		}
 
-		cb(null, me.getPassword() === result.getPassword());
+		if (!imports._.isArray(result) || result.length !== 1) {
+			return cb(null, false);
+		}
+
+		var lUser = result[0];
+		cb(null, me.getPassword() === lUser.getPassword());
 	});
 };
 

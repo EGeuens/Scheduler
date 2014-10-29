@@ -54,7 +54,7 @@ describe("AuthenticationHandler.", function () {
 
 			spyOn(imports.User.prototype, "find").andCallFake(function (query, cb) {
 				expect(query).toEqual({ username: lUsername });
-				cb(lError, lUser);
+				cb(lError, [lUser]);
 			});
 			spyOn(lUser, "isValidPassword").andCallFake(function (cb) {
 				cb(null, false);
@@ -75,7 +75,7 @@ describe("AuthenticationHandler.", function () {
 
 			spyOn(imports.User.prototype, "find").andCallFake(function (query, cb) {
 				expect(query).toEqual({ username: lUsername });
-				cb(lError, lUser);
+				cb(lError, [lUser]);
 			});
 			spyOn(lUser, "isValidPassword").andCallFake(function (cb) {
 				cb(null, true);

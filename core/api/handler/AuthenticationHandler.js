@@ -54,16 +54,17 @@ AuthenticationHandler.prototype.setupSerializers = function () {
 };
 
 AuthenticationHandler.prototype.localStrategy = function (username, password, done) {
-	imports.User.prototype.find({ username: username }, function (err, user) {
+	imports.User.prototype.find({ username: username }, function (err, users) {
 		if (err) {
 			return done(err);
 		}
 
-		if (!user || imports._.isArray(user)) {
+		if (!users || users.length !== 1) {
 			return done(null, false, { message: imports.Messages.UNKNOWN_USER });
 		}
 
-		user.isValidPassword(function (err, result) {
+		var lUser = users[0];
+		lUser.isValidPassword(function (err, result) {
 			if (err) {
 				return done(err);
 			}
@@ -72,7 +73,7 @@ AuthenticationHandler.prototype.localStrategy = function (username, password, do
 				return done(null, false, { message: imports.Messages.INVALID_PASSWORD });
 			}
 
-			return done(null, user);
+			return done(null, lUser);
 		});
 	});
 }

@@ -30,7 +30,7 @@ ErrorHandler.prototype.catchEverything = function (err, req, res, next) {
 
 	// respond with json
 	if (req.accepts("json")) {
-		res.send({ error: "Something broke, badly..." });
+		res.send({ message: "Something broke, badly...", error: err });
 		return;
 	}
 

@@ -27,14 +27,18 @@ var Router = function () {
 Router.prototype.setup = function (router) {
 	privates.ApiHandler = new imports.ApiHandler(router);
 
-	//	var passport = require("passport");
-	//	router.post("/login", passport.authenticate("local"), function (req, res) {
-	//		console.log("Happy");
-	//		res.status(200).send({ message: "yihaa"});
-	//	});
+	var passport = require("passport");
+	router.post("/login", passport.authenticate("local"), function (req, res) {
+		console.log("Happy");
+		res.status(200).send({ message: "yihaa"});
+	});
 
 	var lModule = require("./model/Module");
 	privates.ApiHandler.get("/modules", lModule.prototype.find);
+
+	lModule = require("./model/User");
+	privates.ApiHandler.get("/users", lModule.prototype.find);
+	privates.ApiHandler.post("/users", lModule.prototype.save);
 
 	router.get("/bla", function (req, res) {
 		res.status(200).send({ message: "hi" });

@@ -52,7 +52,7 @@ Context.prototype.execute = function () {
 		return false;
 	}
 
-	me.getCurrent()(me, function (err, result) {
+	me.getCurrent()(me, function (err, result, statusCode) {
 		if (err) {
 			return me.getResponse().status(400).send(
 				imports.ErrorFactory.create("Code:", err.code, "Message:", err.message)
@@ -61,7 +61,7 @@ Context.prototype.execute = function () {
 
 		if (!privates.hasResponded) {
 			privates.hasResponded = true;
-			return me.getResponse().status(200).send(result);
+			return me.getResponse().status(statusCode || 200).send(result);
 		}
 	});
 };

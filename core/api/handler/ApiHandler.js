@@ -1,11 +1,4 @@
 "use strict";
-/**
- *
- * @class ApiHandler
- * @author Erwin
- * @date 14/10/2014
- */
-
 var imports = {
 		Messages: require("../enum/Messages"),
 		Context : require("../model/Context"),
@@ -35,6 +28,10 @@ var imports = {
 	};
 
 /**
+ * Handles API calls, providing them with a {@link core.api.model.Context}
+ * @class core.api.handler.ApiHandler
+ * @author Erwin
+ * @date 14/10/2014
  * @constructor
  */
 var ApiHandler = function (router) {

@@ -1,11 +1,4 @@
 "use strict";
-/**
- *
- * @class core.api.model.Context
- * @author Erwin
- * @date 14/10/2014
- */
-
 var imports = {
 		Messages    : require("../enum/Messages"),
 		ModelFactory: require("../factory/ModelFactory"),
@@ -38,6 +31,10 @@ var imports = {
 	};
 
 /**
+ *
+ * @class core.api.model.Context
+ * @author Erwin
+ * @date 14/10/2014
  * @constructor
  */
 var Context = function (conf) {

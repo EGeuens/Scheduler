@@ -124,7 +124,7 @@ MongoDbAdaptee.prototype.save = function (collection, record, cb) {
 			if (!err) {
 				lReturn = query.record;
 			}
-			cb(err, lReturn); //TODO check this
+			cb(err, lReturn);
 		});
 	});
 };

@@ -34,6 +34,10 @@ var DatabaseAdapter = function () {
 ////
 // Public properties
 ////
+/**
+ * @static
+ * @type {string}
+ */
 DatabaseAdapter.prototype.MONGODB = "mongodb";
 
 ////

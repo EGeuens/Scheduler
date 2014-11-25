@@ -59,14 +59,14 @@ Context.prototype.execute = function () {
 		if (me.getRequest().isAuthenticated()) {
 			if (me.getAuthorisation().length > 0) {
 				//TODO handle authorisation
-				return me.getResponse().send(401, {"message": "You're not authorized to perform this request"});
+				return me.getResponse().status(401).send({"message": "You're not authorized to perform this request"});
 			}
 			else {
 				return privates.doExecute(me);
 			}
 		}
 		else {
-			return me.getResponse().send(401, {"message": "You need to login to perform this request"});
+			return me.getResponse().status(401).send({"message": "You need to login to perform this request"});
 		}
 	}
 	else {
@@ -75,12 +75,9 @@ Context.prototype.execute = function () {
 };
 
 /**
- * Convenience method to check if an object is an instance of this class
- * @returns {boolean} Always true :)
+ * Convenience property to check if an object is an instance of this class
  */
-Context.prototype.isContext = function () {
-	return true;
-};
+Context.prototype.isContext = true;
 
 /**
  * Mixin override (model is not exposed)

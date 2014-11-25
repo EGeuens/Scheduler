@@ -18,12 +18,12 @@ var imports = {
 		dbType    : imports.DatabaseAdapter.MONGODB,
 		collection: "users",
 		model     : {
-			_id     : { type: Number, default: null, validate: ["number"] },
-			name     : { type: String, default: "", validate: ["required", "alphabetic"] },
-			firstName: { type: String, default: "", validate: ["required", "alphabetic"] },
-			username : { type: String, default: "", validate: ["required", "alphanumeric"] },
-			password: { type: String, default: "", validate: [] },
-			email    : { type: String, default: "", validate: ["required", "email"] }
+			_id      : {type: Number, default: null, validate: ["number"]},
+			name     : {type: String, default: "", validate: ["required", "alphabetic"]},
+			firstName: {type: String, default: "", validate: ["required", "alphabetic"]},
+			username : {type: String, default: "", validate: ["required", "alphanumeric"]},
+			password : {type: String, default: "", validate: []},
+			email    : {type: String, default: "", validate: ["required", "email"]}
 		}
 	};
 
@@ -37,15 +37,20 @@ var User = imports.ModelFactory.create(privates.model);
 ///
 /**
  * Updates or creates a user
- * @param context
+ * @param query
  * @param cb
  */
-User.prototype.save = function (context, cb) {
+User.prototype.save = function (query, cb) {
 	var me = this,
-		lUser = new User(context.getQuery());
+		lUser = new User(query.getQuery()),
+		lQuery = query;
+
+	if (query.isContext) {
+		lQuery = query.getQuery();
+	}
 
 	if (!lUser.validate()) {
-		return cb(null, { message: "Invalid user" }, 412);
+		return cb(null, {message: "Invalid user"}, 412);
 	}
 
 	imports.DatabaseAdapter.save(privates.dbType, privates.collection, lUser.toModel(), function (err, saved) {
@@ -65,7 +70,11 @@ User.prototype.save = function (context, cb) {
  * @param cb
  */
 User.prototype.find = function (query, cb) {
-	imports.DatabaseAdapter.query(privates.dbType, privates.collection, { selector: query }, function (err, users) {
+	var lQuery = query;
+	if (query.isContext) {
+		lQuery = query.getQuery();
+	}
+	imports.DatabaseAdapter.query(privates.dbType, privates.collection, {selector: lQuery}, function (err, users) {
 		var lUsers = null,
 			lUser, i;
 

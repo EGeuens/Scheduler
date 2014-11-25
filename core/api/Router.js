@@ -32,6 +32,10 @@ Router.prototype.setup = function (router) {
 		console.log("Happy");
 		res.status(200).send({ message: "yihaa"});
 	});
+	router.post("/logout", function (req, res) {
+		req.logout();
+		res.status(200).send({message: "logged out"});
+	});
 
 	var lModule = require("./model/Module");
 	privates.ApiHandler.get("/modules", lModule.prototype.find);

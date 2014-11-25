@@ -56,20 +56,21 @@ Context.prototype.execute = function () {
 	var me = this;
 
 	if (me.getAuthenticate()) {
-		//TODO handle authentication
-
-		if (me.getAuthorisation().length > 0) {
-			//TODO handle authorisation
-			return false;
+		if (me.getRequest().isAuthenticated()) {
+			if (me.getAuthorisation().length > 0) {
+				//TODO handle authorisation
+				return me.getResponse().send(401, {"message": "You're not authorized to perform this request"});
+			}
+			else {
+				return privates.doExecute(me);
+			}
 		}
 		else {
-			imports.Passport.authenticate("local", function () {
-				privates.doExecute(me);
-			})(me.getRequest(), me.getResponse());
+			return me.getResponse().send(401, {"message": "You need to login to perform this request"});
 		}
 	}
 	else {
-		privates.doExecute(me);
+		return privates.doExecute(me);
 	}
 };
 
